@@ -4,3 +4,10 @@
 
 # Table of Contents
 - [Methodology and Models](#methodology-and-models)
+
+![Screenshot](images/mitigation-framework-architecture.png)
+
+# References
+```bibtex
+
+```
