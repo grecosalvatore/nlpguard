@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 
 class Explainer(ABC):
+    """ Abstract Explainer Class. """
     def __init__(self):
         return
 
