@@ -3,8 +3,10 @@
 
 
 # Table of Contents
-- [Methodology and Models](#methodology-and-models)
+- [Mitigation Framework](#mitigation-framework)
 
+
+# Mitigation Framework
 ![Screenshot](images/mitigation-framework-architecture.png)
 
 # References
