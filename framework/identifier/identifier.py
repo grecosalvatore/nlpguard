@@ -7,9 +7,17 @@ class Identifier(ABC):
     def __init__(self):
         return
 
+    def annotate_protected_attributes(self):
+        return
+
 
 class ChatGPTModerator(Identifier):
-    def __init__(self):
+    def __init__(self, openai_api_key="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"):
+        openai.api_key = openai_api_key
+
+        return
+
+    def annotate_protected_attributes(self):
         return
 
 def chatgpt_annotate(tk):
