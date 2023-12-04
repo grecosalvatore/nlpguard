@@ -6,6 +6,13 @@ class Moderator(ABC):
     def __init__(self):
         return
 
+    def remove_words_mitigation(self):
+        return
+
+    def remove_sentences_mitigation(self):
+        return
+
+
 
 class PandasDataFrameModerator(Moderator):
     def __init__(self):
