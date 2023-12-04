@@ -1,6 +1,16 @@
 import openai
+from abc import ABC, abstractmethod
 
 
+class Identifier(ABC):
+    """ Abstract Moderator Class. """
+    def __init__(self):
+        return
+
+
+class ChatGPTModerator(Identifier):
+    def __init__(self):
+        return
 
 def chatgpt_annotate(tk):
     response = openai.ChatCompletion.create(
