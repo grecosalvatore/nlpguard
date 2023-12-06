@@ -32,3 +32,10 @@ classification accuracy. It does so by means of three components:
 ```bibtex
 
 ```
+
+# Authors
+- Salvatore Greco
+- Ke Zhou
+- Licia Capra
+- Tania Cerquitelli
+- Daniele Quercia
