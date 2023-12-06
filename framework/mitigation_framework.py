@@ -78,7 +78,7 @@ class MitigationFramework:
             model:
             tokenizer:
             texts (List[str]):
-            explainer_method
+            explainer_method (str):
         """
 
         if explainer_method == "integrated-gradients":
