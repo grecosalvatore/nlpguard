@@ -19,11 +19,15 @@ class Explainer(ABC):
 
 
 class IntegratedGradientsExplainer(Explainer):
-
+    """ """
     def __init__(self, model, tokenizer):
+        #
+        self.model = model
+        self.tokenizer = tokenizer
+
         # Create IG explainer Ferret library
-        igx = IntegratedGradientExplainer(model, tokenizer)
-        bench = Benchmark(model, tokenizer, explainers=[igx])
+        self.igx = IntegratedGradientExplainer(model, tokenizer)
+        self.bench = Benchmark(model, tokenizer, explainers=[self.igx])
         return
 
 

@@ -1,9 +1,22 @@
-
+import os
 
 
 class MitigationFramework:
+    """ """
+    def __init__(self, use_case_name, output_folder=None):
+        # Init use case name
+        self.use_case_name = use_case_name
+        # Init output folder
+        if output_folder is not None:
+            self.output_folder = output_folder
+        else:
+            self.output_folder = os.path.join("..", "outputs")
 
-    def __init__(self):
+        self._init_outputs_folders(use_case_name, output_folder)
+        return
+
+    def _init_outputs_folders(self, use_case_name, output_folder):
+
         return
 
     def run_explainer(self, explainer_method="integrated-gradients"):
