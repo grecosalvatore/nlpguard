@@ -11,7 +11,7 @@ class Identifier(ABC):
         return
 
 
-class ChatGPTModerator(Identifier):
+class ChatGPTIdentifier(Identifier):
     def __init__(self, openai_api_key="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"):
         openai.api_key = openai_api_key
 

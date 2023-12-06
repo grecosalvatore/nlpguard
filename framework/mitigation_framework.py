@@ -1,8 +1,11 @@
-from explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
+import pandas as pd
+
+from framework.explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
+from transformers.pipelines import pipeline
 import os
 import time
 import datetime
-
+from tqdm import tqdm
 
 class MitigationFramework:
     """ """
@@ -72,11 +75,11 @@ class MitigationFramework:
         print(f"Mitigation Framework: Initialized output folder - {use_case_folder_path}.")
         return output_folder, use_case_name
 
-    def run_explainer(self, model, tokenizer, texts, explainer_method="integrated-gradients", batch_size=128):
+    def run_explainer(self, model, tokenizer, texts, explainer_method="integrated-gradients", batch_size=128, device="cpu"):
         """
         Args:
-            model:
-            tokenizer:
+            model (AutoModelForSequenceClassification):
+            tokenizer (AutoTokenizer):
             texts (List[str]):
             explainer_method (str):
         """
@@ -90,6 +93,12 @@ class MitigationFramework:
         else:
             print("Mitigation Framework: Unknown Explainer method. Please select ....")
 
+        # Predict labels from texts
+        print("Mitigation Framework: Running Predictions")
+        self.run_predictions(model, tokenizer, texts, batch_size, device)
+
+        print("Mitigation Framework: Running Local Explanations")
+        exp.local_explanations(texts, batch_size, device)
         return
 
     def run_identifier(self, identifier_method="chatgpt"):
@@ -103,4 +112,32 @@ class MitigationFramework:
         return
 
     def run_moderator(self):
+        return
+
+    def run_predictions(self, model, tokenizer, texts, batch_size, device):
+        tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
+        pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
+
+        preds = []
+        iterations = len(texts) // batch_size
+        remainder = len(texts) % batch_size
+        for i in tqdm(range(iterations)):
+            batch_preds = pipe(texts[i:i + batch_size], **tokenizer_kwargs)
+            preds.extend(batch_preds)
+
+        batch_preds = pipe(texts[-remainder:], **tokenizer_kwargs)
+        preds.extend(batch_preds)
+
+
+        pred_labels = [d["label"] for d in preds]
+        pred_scores = [d["score"] for d in preds]
+
+        pred_dict = {}
+        pred_dict["text"] = texts
+        pred_dict["pred_label"] = pred_labels
+        pred_dict["pred_score"] = pred_scores
+        pred_dict["pred_probabilities"] = preds
+
+        df = pd.DataFrame(pred_dict)
+        df.to_csv(os.path.join(self.output_folder, self.use_case_name, "predictions.csv"))
         return
