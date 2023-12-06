@@ -1,3 +1,4 @@
+from explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
 import os
 import time
 import datetime
@@ -18,8 +19,6 @@ class MitigationFramework:
     def run_full_mitigation_pipeline(self, use_case_name=None, output_folder=None):
         return
 
-    def run_explainer(self):
-        return
 
     def run_identifier(self):
         return
@@ -29,7 +28,11 @@ class MitigationFramework:
 
     @staticmethod
     def _init_output_folders(use_case_name, output_folder):
-        """ Initializes the output folders. """
+        """ Initializes the output folders.
+        Args:
+            use_case_name (str):
+            output_folder (str):
+        """
         # Init output folder. If output folder is not specified, the dafault is "outputs".
         if output_folder is None:
             output_folder = ("outputs")
@@ -54,21 +57,38 @@ class MitigationFramework:
 
         use_case_folder_path = os.path.join(output_folder, use_case_name)
         os.mkdir(use_case_folder_path)
+
+        # Create the explainer output folders
         os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs"))
+        os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs", "local_explanations"))
+        os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs", "global_explanations"))
+
+        # Create the identifier output folders
         os.mkdir(os.path.join(use_case_folder_path, "identifier_outputs"))
+
+        # Create the moderator output folders
         os.mkdir(os.path.join(use_case_folder_path, "moderator_outputs"))
+
         print(f"Mitigation Framework: Initialized output folder - {use_case_folder_path}.")
         return output_folder, use_case_name
 
-    def run_explainer(self, explainer_method="integrated-gradients"):
-
+    def run_explainer(self, model, tokenizer, texts, explainer_method="integrated-gradients", batch_size=128):
+        """
+        Args:
+            model:
+            tokenizer:
+            texts (List[str]):
+            explainer_method
+        """
 
         if explainer_method == "integrated-gradients":
-            print("Integrated Gradients Explainer")
+            print("Mitigation Framework: Instantiated Integrated Gradients Explainer")
+            exp = IntegratedGradientsExplainer(model, tokenizer)
         elif explainer_method == "shap":
-            print("SHAP Explainer")
+            print("Mitigation Framework: Instantiated SHAP Explainer")
+            exp = ShapExplainer(model, tokenizer)
         else:
-            print("Unknown Explainer method")
+            print("Mitigation Framework: Unknown Explainer method. Please select ....")
 
         return
 
