@@ -127,14 +127,14 @@ class MitigationFramework:
     def run_identifier(self, output_dict, identifier_method="chatgpt"):
 
         if identifier_method == "chatgpt":
-            print("ChatGPT Identifier")
-
             # Extracting distinct words from most important words for each label
             distinct_words = list(set(word for words_list in output_dict.values() for word in words_list))
 
             print("Mitigation Framework: Running ChatGPT Identification of Protected Attributes")
+            # Instantiating the ChatGPT implementation of the Identifier
             identifier = ChatGPTIdentifier()
 
+            # Annotating the protected attributes with ChatGPT
             identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
             print("MTurk Identifier")
