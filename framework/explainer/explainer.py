@@ -159,7 +159,7 @@ class IntegratedGradientsExplainer(Explainer):
         batch_scores = []
         batch_scores_weighted = []
 
-        for text, prob in tqdm(zip(batch_texts,batch_pred_scores)):
+        for text, prob in tqdm(zip(batch_texts, batch_pred_scores)):
             text = str(text)
 
             #tokenized_text = self.tokenizer.tokenize(text)

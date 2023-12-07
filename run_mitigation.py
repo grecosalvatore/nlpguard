@@ -24,6 +24,20 @@ if __name__ == '__main__':
 
     label_ids_to_explain = [0, 1]
 
-    output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
+    #output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
 
-    mf.run_identifier(output_dict)
+    #mf.run_identifier(output_dict)
+
+    protected_attributes_dict = {0: ["he", "his", "him", "himself"],
+                                 1: ["she", "her", "hers", "herself, nurse, nursing"]}
+
+
+    df_train = pd.read_csv("saved_datasets/test.csv")
+    df_train = df_train.iloc[:500]
+
+    df_train_mitigated = mf.run_moderator(df_train, tokenizer, protected_attributes_dict,
+                                          text_column_name="cleaned_text", label_column_name="label",
+                                          mitigate_each_label_separately=False, batch_size=128)
+
+    print(df_train_mitigated.head(30))
+    df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)
