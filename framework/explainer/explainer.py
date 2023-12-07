@@ -12,7 +12,7 @@ class Explainer(ABC):
         return
 
     @abstractmethod
-    def local_explanations(self):
+    def local_explanations(self, **kwargs):
         return
 
     @abstractmethod
@@ -21,9 +21,8 @@ class Explainer(ABC):
 
 
 class IntegratedGradientsExplainer(Explainer):
-    """ """
+    """ Integrated Gradients implementation of the Explainer abstract class. """
     def __init__(self, model, tokenizer):
-        #
         self.model = model
         self.tokenizer = tokenizer
 
