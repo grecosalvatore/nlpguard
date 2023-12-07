@@ -15,9 +15,68 @@ class Explainer(ABC):
     def local_explanations(self, **kwargs):
         return
 
-    @abstractmethod
-    def global_explanations(self):
+
+    def global_explanations(self, label_ids_to_explain, id2label, explainer_output_folder):
+
+        for label_id in label_ids_to_explain:
+            label_name = id2label[label_id]
+            df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
+            df_current_global = self._compute_global_scores(df_current)
+            df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_explanations_{label_name}.csv"))
+            print(df_current_global)
+            print("\n\n")
+
+
         return
+
+    @staticmethod
+    def _load_local_explanations(dir_path):
+        df_list = []
+
+        for path in os.listdir(dir_path):
+            current_path = dir_path + "/" + path
+            if current_path.endswith(".csv"):
+                df_tmp = pd.read_csv(dir_path + "/" + path)
+                df_list.append(df_tmp)
+
+        df = pd.concat(df_list)
+        df["tokens"] = df["tokens"].astype(str)
+        df["tokens"] = df["tokens"].apply(lambda x: x.replace(" ", ""))
+        df["tokens"] = df["tokens"].apply(lambda x: x.lower())
+        return df
+
+    @staticmethod
+    def _compute_global_scores(df):
+        df_grp = df.groupby(["tokens"]).sum().reset_index()
+
+        df_freq = df.groupby(["tokens"]).size().reset_index(name='freq')
+
+        neg_freq_dict = {}
+
+        for token, freq in zip(df_freq.tokens.tolist(), df_freq.freq.tolist()):
+            neg_freq_dict[token] = freq
+
+        df_global = df_grp.copy()
+
+        df_global = df_global.join(df_freq.set_index('tokens'), on='tokens')
+
+        df_global["score_norm"] = df_global["explanation_scores"] / df_global["freq"]
+
+        df_global = df_global.drop(columns=["Unnamed: 0"])
+
+        df_global = df_global.sort_values(by='score_norm', ascending=False)
+
+        df_global = df_global.loc[df_global.freq > 1]
+
+        df_global = df_global.loc[~df_global.tokens.str.startswith("##")]
+
+        df_global = df_global.loc[df_global.tokens.str.len() > 2]
+
+        df_global = df_global.loc[~df_global.tokens.str.isdigit()]
+
+        df_global = df_global.loc[df_global.score_norm > 0]
+
+        return df_global
 
 
 class IntegratedGradientsExplainer(Explainer):
@@ -113,8 +172,6 @@ class IntegratedGradientsExplainer(Explainer):
         return batch_tokens, batch_scores, batch_scores_weighted
 
 
-    def global_explanations(self):
-        return
 
 
 class ShapExplainer(Explainer):
