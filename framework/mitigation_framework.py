@@ -117,6 +117,8 @@ class MitigationFramework:
         print("Mitigation Framework: Running Local Explanations")
         local_explanations_folder = os.path.join(self.explainer_output_folder, "local_explanations")
         exp.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size, device)
+
+        print("Mitigation Framework: Running Global Explanations")
         exp.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
         return
 

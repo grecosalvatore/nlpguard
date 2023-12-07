@@ -61,6 +61,7 @@ class Explainer(ABC):
         df_global = df_global.join(df_freq.set_index('tokens'), on='tokens')
 
         df_global["score_norm"] = df_global["explanation_scores"] / df_global["freq"]
+        df_global["score_norm_weighted"] = df_global["explanation_scores_weighted"] / df_global["freq"]
 
         df_global = df_global.drop(columns=["Unnamed: 0"])
 
