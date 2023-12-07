@@ -3,8 +3,11 @@ from transformers import AutoModel, AutoModelForSequenceClassification, AutoToke
 import pandas as pd
 
 if __name__ == '__main__':
+    id2label = {0: "non-nurse", 1:"nurse"}
+
     mf = MitigationFramework()
-    mf.initialize_mitigation_framework(use_case_name="bert_toxicity")
+    mf.initialize_mitigation_framework(id2label=id2label,
+                                       use_case_name="nurse_vs_all")
 
     model_name_or_path = "saved_models/nurse_vs_all/bert-base-uncased/best_model/"
 
@@ -15,4 +18,6 @@ if __name__ == '__main__':
 
     texts = df["cleaned_text"].tolist()[:300]
 
-    mf.run_explainer(model, tokenizer, texts)
+    label_ids_to_explain = [1]
+
+    mf.run_explainer(model, tokenizer, texts, label_ids_to_explain)

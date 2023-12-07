@@ -12,11 +12,24 @@ class MitigationFramework:
     def __init__(self):
         self.use_case_name = None
         self.output_folder = None
+        self.explainer_output_folder = None
+        self.identifier_output_folder = None
+        self.moderator_output_folder = None
+        self.id2label = None
+        self.label2id = None
         return
 
 
-    def initialize_mitigation_framework(self, use_case_name=None, output_folder=None):
-        self.output_folder, self.use_case_name = self._init_output_folders(use_case_name, output_folder)
+    def initialize_mitigation_framework(self, id2label, use_case_name=None, output_folder=None):
+        """ Initializes the output folders.
+            Args:
+                use_case_name (str):
+                output_folder (str):
+                labels2id (dict):
+        """
+        self.id2label = id2label
+        self.label2id = {v: k for k, v in id2label.items()}
+        self.output_folder, self.use_case_name, self.explainer_output_folder, self.identifier_output_folder, self.moderator_output_folder = self._init_output_folders(use_case_name, output_folder)
         return
 
     def run_full_mitigation_pipeline(self, use_case_name=None, output_folder=None):
@@ -62,25 +75,29 @@ class MitigationFramework:
         os.mkdir(use_case_folder_path)
 
         # Create the explainer output folders
-        os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs"))
-        os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs", "local_explanations"))
-        os.mkdir(os.path.join(use_case_folder_path, "explainer_outputs", "global_explanations"))
+        explainer_output_folder = os.path.join(use_case_folder_path, "explainer_outputs")
+        os.mkdir(explainer_output_folder)
+        os.mkdir(os.path.join(explainer_output_folder, "local_explanations"))
+        os.mkdir(os.path.join(explainer_output_folder, "global_explanations"))
 
         # Create the identifier output folders
-        os.mkdir(os.path.join(use_case_folder_path, "identifier_outputs"))
+        identifier_output_folder = os.path.join(use_case_folder_path, "identifier_outputs")
+        os.mkdir(identifier_output_folder)
 
         # Create the moderator output folders
-        os.mkdir(os.path.join(use_case_folder_path, "moderator_outputs"))
+        moderator_output_folder = os.path.join(use_case_folder_path, "moderator_outputs")
+        os.mkdir(moderator_output_folder)
 
         print(f"Mitigation Framework: Initialized output folder - {use_case_folder_path}.")
-        return output_folder, use_case_name
+        return output_folder, use_case_name, explainer_output_folder, identifier_output_folder, moderator_output_folder
 
-    def run_explainer(self, model, tokenizer, texts, explainer_method="integrated-gradients", batch_size=128, device="cpu"):
+    def run_explainer(self, model, tokenizer, texts, label_ids_to_explain,  explainer_method="integrated-gradients", batch_size=128, device="cpu"):
         """
         Args:
             model (AutoModelForSequenceClassification):
             tokenizer (AutoTokenizer):
             texts (List[str]):
+            label_ids_to_explain (List[int]):
             explainer_method (str):
         """
 
@@ -95,10 +112,11 @@ class MitigationFramework:
 
         # Predict labels from texts
         print("Mitigation Framework: Running Predictions")
-        self.run_predictions(model, tokenizer, texts, batch_size, device)
+        df_predictions = self.run_predictions(model, tokenizer, texts, batch_size, device)
 
         print("Mitigation Framework: Running Local Explanations")
-        exp.local_explanations(texts, batch_size, device)
+        local_explanations_folder = os.path.join(self.explainer_output_folder, "local_explanations")
+        exp.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size, device)
         return
 
     def run_identifier(self, identifier_method="chatgpt"):
@@ -129,15 +147,16 @@ class MitigationFramework:
         preds.extend(batch_preds)
 
 
-        pred_labels = [d["label"] for d in preds]
+        pred_label_names = [d["label"] for d in preds]
         pred_scores = [d["score"] for d in preds]
 
         pred_dict = {}
         pred_dict["text"] = texts
-        pred_dict["pred_label"] = pred_labels
+        pred_dict["pred_label_name"] = pred_label_names
+        pred_dict["pred_label_id"] = [self.label2id[l] for l in pred_label_names]
         pred_dict["pred_score"] = pred_scores
         pred_dict["pred_probabilities"] = preds
 
         df = pd.DataFrame(pred_dict)
         df.to_csv(os.path.join(self.output_folder, self.use_case_name, "predictions.csv"))
-        return
+        return df

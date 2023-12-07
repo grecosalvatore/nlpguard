@@ -31,65 +31,61 @@ class IntegratedGradientsExplainer(Explainer):
         self.bench = Benchmark(model, tokenizer, explainers=[self.igx])
         return
 
+    @staticmethod
+    def batch_iterator(list1, list2, batch_size):
+        # Ensure both input lists have the same length
+        if len(list1) != len(list2):
+            raise ValueError("Input lists must have the same length")
 
-    def local_explanations(self, df_predictions, local_explanations_folder, labels2explain=None,  batch_size=128):
+        for i in range(0, len(list1), batch_size):
+            start_index = i
+            end_index = min(i + batch_size, len(list1))
+            yield list1[start_index:end_index], list2[start_index:end_index], start_index, end_index
+
+
+    def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128, device=None):
+        """ ."""
         log_errors = []
         log_filepath = os.path.join(local_explanations_folder, "log_file.txt")
 
-
-        if labels2explain is None:
-            labels2explain = labels2explain
-
         start_index = 0
-        for label_id, l in enumerate(labels2explain):
 
-            current_path = os.path.join(local_explanations_folder, l)
+        label_ids_to_explain
+        for label_id in label_ids_to_explain:
+            label_name = id2label[label_id]
+
+            current_path = os.path.join(local_explanations_folder, label_name)
             if not os.path.exists(current_path):
                 os.mkdir(current_path)
 
-            df_predictions_current_label = df_predictions.loc[df_predictions.pred_labels == l]
-            print(f"Explainer: Explaining label: {l} - Number of texts: {len(df_predictions_current_label)}")
+            # Select texts predicted with the current label to explain
+            df_predictions_current_label = df_predictions.loc[df_predictions.pred_label_name == label_name]
 
-            iterations = len(df_predictions_current_label["text"].tolist()[start_index:]) // batch_size
-            remainder = len(df_predictions_current_label["text"].tolist()[start_index:]) % batch_size
+            print(f"Explainer: Explaining label: {label_name} - Number of texts: {len(df_predictions_current_label)}")
 
-            for i in range(iterations):
+            for batch_texts, batch_predicted_prob_explained_class, start_index, end_index in self.batch_iterator(df_predictions_current_label["text"].tolist(), df_predictions_current_label["pred_score"].tolist(), batch_size):
+
                 try:
-                    index_a = start_index + i * batch_size
-                    index_b = start_index + i * batch_size + batch_size
-                    print(f"\t Explaining Batch: {index_a} -> {index_b}")
+                    print(f"\t Explaining Batch: {start_index} -> {end_index}")
 
-                    batch_texts = df_predictions_current_label["text"].tolist()[index_a:index_b]
-                    batch_predicted_prob_explained_class = df_predictions_current_label["pred_probs"].tolist()[index_a:index_b]
-
+                    # Compute local explanation on current batch
                     batch_tokens, batch_scores, batch_scores_weighted = self._compute_batch_local_explanations(label_id, batch_texts, batch_predicted_prob_explained_class)
 
+                    # Save local explanations of current batch on a csv file
                     df = pd.DataFrame({"tokens": batch_tokens, "explanation_scores": batch_scores, "explanation_scores_weighted": batch_scores_weighted})
-                    df.to_csv(os.path.join(current_path, f"scores_{index_a}_{index_b}.csv"))
+                    df.to_csv(os.path.join(current_path, f"scores_{start_index}_{end_index}.csv"))
 
                 except Exception as e:
-                    print(f"An exception occurred in {index_a} -> {index_b}")
+                    print(f"An exception occurred in {start_index} -> {end_index}")
                     print(e)
-                    log_errors.append(f"An exception occurred in {index_a} -> {index_b} in label {l}")
+                    log_errors.append(f"An exception occurred in {start_index} -> {end_index} in label {label_name}")
                     with open(log_filepath, "a") as file_object:
-                        file_object.write(f"\nAn exception occurred in {index_a} -> {index_b} in label {l}")
-
-                print(f"{len(df_test_selected[text_column_name].tolist()) - remainder} -> {len(df_test_selected[text_column_name].tolist())}")
-                for text, prob in zip(df_test_selected[text_column_name].tolist()[-remainder:],
-                                      df_test_selected["pred_probs"].tolist()[-remainder:]):
-
-                    batch_texts = df_predictions_current_label["text"].tolist()[-remainder:]
-                    batch_predicted_prob_explained_class = df_predictions_current_label["pred_probs"].tolist()[-remainder:]
-
-
-                    batch_tokens, batch_scores, batch_scores_weighted = self._compute_batch_local_explanations(label_id, batch_texts, batch_predicted_prob_explained_class)
-
-                    df.to_csv(os.path.join(current_path,
-                                           f"scores_{len(df_test_selected[text_column_name].tolist()) - remainder}_end.csv"))
+                        file_object.write(f"\nAn exception occurred in {start_index} -> {end_index} in label {label_name}")
 
         return
 
     def _compute_batch_local_explanations(self, label_id, batch_texts, batch_pred_scores):
+        """ ."""
         batch_tokens = []
         batch_scores = []
         batch_scores_weighted = []
@@ -103,12 +99,14 @@ class IntegratedGradientsExplainer(Explainer):
 
             explanations = self.bench.explain(text, target=label_id, show_progress=False, normalize_scores=True)
 
+            # Remove [CLS] and [SEP] tokens
             tokens = explanations[0].tokens[1:-1]
-
             scores_raw = explanations[0].scores[1:-1].tolist()
 
+            # Produce importance score weighted by predicted probability
             scores_weighted = [s * prob for s in scores_raw]
 
+            # Store tokens, feature importance, and weighted feature importance
             batch_tokens.extend(tokens)
             batch_scores.extend(scores_raw)
             batch_scores_weighted.extend(scores_weighted)
