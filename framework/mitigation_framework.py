@@ -120,14 +120,22 @@ class MitigationFramework:
         explainer.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size)
 
         print("Mitigation Framework: Running Global Explanations")
-        explainer.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
-        return
+        output_dict = explainer.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
 
-    def run_identifier(self, identifier_method="chatgpt"):
+        return output_dict
+
+    def run_identifier(self, output_dict, identifier_method="chatgpt"):
 
         if identifier_method == "chatgpt":
             print("ChatGPT Identifier")
-            identifier = ChatGPTIdentifier(model, tokenizer)
+
+            # Extracting distinct words from most important words for each label
+            distinct_words = list(set(word for words_list in output_dict.values() for word in words_list))
+
+            print("Mitigation Framework: Running ChatGPT Identification of Protected Attributes")
+            identifier = ChatGPTIdentifier()
+
+            identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
             print("MTurk Identifier")
         else:

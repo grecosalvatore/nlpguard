@@ -18,6 +18,8 @@ class Explainer(ABC):
 
     def global_explanations(self, label_ids_to_explain, id2label, explainer_output_folder):
 
+        output_dict = {}
+
         for label_id in label_ids_to_explain:
             label_name = id2label[label_id]
             df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
@@ -26,7 +28,9 @@ class Explainer(ABC):
             print(df_current_global)
             print("\n\n")
 
-        return
+            output_dict[label_name] = df_current_global["tokens"].tolist()[:10]
+
+        return output_dict
 
     @staticmethod
     def _load_local_explanations(dir_path):
