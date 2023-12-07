@@ -20,7 +20,8 @@ class PandasDataFrameModerator(Moderator):
     def __init__(self):
         return
 
-    def words_removal_mitigation_strategy(self, df, protected_attributes, tokenizer, remove):
+    def words_removal_mitigation_strategy(self, df, protected_attributes, tokenizer):
+        return
 
 
 class HuggingFaceDatasetModerator(Moderator):

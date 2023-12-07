@@ -1,9 +1,13 @@
 from framework.mitigation_framework import MitigationFramework
 from transformers import AutoModel, AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
+import torch
+
 
 if __name__ == '__main__':
     id2label = {0: "non-nurse", 1:"nurse"}
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     mf = MitigationFramework()
     mf.initialize_mitigation_framework(id2label=id2label,
@@ -20,4 +24,4 @@ if __name__ == '__main__':
 
     label_ids_to_explain = [0, 1]
 
-    mf.run_explainer(model, tokenizer, texts, label_ids_to_explain)
+    mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)

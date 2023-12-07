@@ -104,10 +104,10 @@ class MitigationFramework:
 
         if explainer_method == "integrated-gradients":
             print("Mitigation Framework: Instantiated Integrated Gradients Explainer")
-            explainer = IntegratedGradientsExplainer(model, tokenizer)
+            explainer = IntegratedGradientsExplainer(model, tokenizer, device)
         elif explainer_method == "shap":
             print("Mitigation Framework: Instantiated SHAP Explainer")
-            explainer = ShapExplainer(model, tokenizer)
+            explainer = ShapExplainer(model, tokenizer, device)
         else:
             print("Mitigation Framework: Unknown Explainer method. Please select ....")
 
@@ -117,7 +117,7 @@ class MitigationFramework:
 
         print("Mitigation Framework: Running Local Explanations")
         local_explanations_folder = os.path.join(self.explainer_output_folder, "local_explanations")
-        explainer.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size, device)
+        explainer.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size)
 
         print("Mitigation Framework: Running Global Explanations")
         explainer.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
@@ -137,7 +137,7 @@ class MitigationFramework:
     def run_moderator(self):
         return
 
-    def run_predictions(self, model, tokenizer, texts, batch_size, device):
+    def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu"):
         tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
         pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
 

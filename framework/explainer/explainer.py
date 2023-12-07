@@ -26,7 +26,6 @@ class Explainer(ABC):
             print(df_current_global)
             print("\n\n")
 
-
         return
 
     @staticmethod
@@ -82,9 +81,10 @@ class Explainer(ABC):
 
 class IntegratedGradientsExplainer(Explainer):
     """ Integrated Gradients implementation of the Explainer abstract class. """
-    def __init__(self, model, tokenizer):
+    def __init__(self, model, tokenizer, device="cpu"):
         self.model = model
         self.tokenizer = tokenizer
+        self.model.to(device)
 
         # Create IG explainer Ferret library
         self.igx = IntegratedGradientExplainer(model, tokenizer)
@@ -98,13 +98,15 @@ class IntegratedGradientsExplainer(Explainer):
         if len(list1) != len(list2):
             raise ValueError("Input lists must have the same length")
 
+        # Iterate over the lists by batch_size
         for i in range(0, len(list1), batch_size):
             start_index = i
             end_index = min(i + batch_size, len(list1))
+            # Return the current batch
             yield list1[start_index:end_index], list2[start_index:end_index], start_index, end_index
 
 
-    def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128, device=None):
+    def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128):
         """ ."""
         log_errors = []
         log_filepath = os.path.join(local_explanations_folder, "log_file.txt")
@@ -112,9 +114,11 @@ class IntegratedGradientsExplainer(Explainer):
         start_index = 0
 
         label_ids_to_explain
+        # Iterate over labels to explain
         for label_id in label_ids_to_explain:
             label_name = id2label[label_id]
 
+            # Create folder for current label
             current_path = os.path.join(local_explanations_folder, label_name)
             if not os.path.exists(current_path):
                 os.mkdir(current_path)
@@ -124,8 +128,8 @@ class IntegratedGradientsExplainer(Explainer):
 
             print(f"Explainer: Explaining label: {label_name} - Number of texts: {len(df_predictions_current_label)}")
 
+            # Iterate over batches of texts
             for batch_texts, batch_predicted_prob_explained_class, start_index, end_index in self.batch_iterator(df_predictions_current_label["text"].tolist(), df_predictions_current_label["pred_score"].tolist(), batch_size):
-
                 try:
                     print(f"\t Explaining Batch: {start_index} -> {end_index}")
 
