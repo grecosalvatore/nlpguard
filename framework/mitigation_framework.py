@@ -123,7 +123,7 @@ class MitigationFramework:
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
             output_dict (:obj:dict):
-            identifier_method (str):
+            identifier_method (str, optinal):
         """
         if identifier_method == "chatgpt":
             # Extracting distinct words from most important words for each label
@@ -142,6 +142,16 @@ class MitigationFramework:
         return
 
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
+        """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
+        Args:
+            df_train (:obj:`pandas.DataFrame`):
+            tokenizer (:obj:`transformers.AutoTokenizer`):
+            protected_attributes_per_label_dict (:obj:dict):
+            text_column_name (str):
+            label_column_name (str):
+            mitigate_each_label_separately (bool, optional):
+            batch_size (int, optional):
+        """
         moderator = PandasDataFrameModerator()
         df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately, batch_size)
         return df_train_mitigated
