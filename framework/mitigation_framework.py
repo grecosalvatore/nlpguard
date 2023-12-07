@@ -1,11 +1,11 @@
-import pandas as pd
-
 from framework.explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
+from framework.identifier.identifier import ChatGPTIdentifier
 from transformers.pipelines import pipeline
 import os
 import time
 import datetime
 from tqdm import tqdm
+import pandas as pd
 
 class MitigationFramework:
     """ """
@@ -94,19 +94,20 @@ class MitigationFramework:
     def run_explainer(self, model, tokenizer, texts, label_ids_to_explain,  explainer_method="integrated-gradients", batch_size=128, device="cpu"):
         """
         Args:
-            model (AutoModelForSequenceClassification):
-            tokenizer (AutoTokenizer):
-            texts (List[str]):
+            model (:obj:`transformers.AutoModelForSequenceClassification`):
+            tokenizer (:obj:`transformers.AutoTokenizer`):
+            texts (:obj:List[str]):
             label_ids_to_explain (List[int]):
             explainer_method (str):
+            device (str, optional):
         """
 
         if explainer_method == "integrated-gradients":
             print("Mitigation Framework: Instantiated Integrated Gradients Explainer")
-            exp = IntegratedGradientsExplainer(model, tokenizer)
+            explainer = IntegratedGradientsExplainer(model, tokenizer)
         elif explainer_method == "shap":
             print("Mitigation Framework: Instantiated SHAP Explainer")
-            exp = ShapExplainer(model, tokenizer)
+            explainer = ShapExplainer(model, tokenizer)
         else:
             print("Mitigation Framework: Unknown Explainer method. Please select ....")
 
@@ -116,16 +117,17 @@ class MitigationFramework:
 
         print("Mitigation Framework: Running Local Explanations")
         local_explanations_folder = os.path.join(self.explainer_output_folder, "local_explanations")
-        exp.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size, device)
+        explainer.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size, device)
 
         print("Mitigation Framework: Running Global Explanations")
-        exp.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
+        explainer.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
         return
 
     def run_identifier(self, identifier_method="chatgpt"):
 
         if identifier_method == "chatgpt":
             print("ChatGPT Identifier")
+            identifier = ChatGPTIdentifier(model, tokenizer)
         elif identifier_method == "mturk":
             print("MTurk Identifier")
         else:

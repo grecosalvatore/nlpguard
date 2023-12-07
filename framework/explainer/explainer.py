@@ -22,7 +22,7 @@ class Explainer(ABC):
             label_name = id2label[label_id]
             df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
             df_current_global = self._compute_global_scores(df_current)
-            df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_explanations_{label_name}.csv"))
+            df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_scores_{label_name}.csv"))
             print(df_current_global)
             print("\n\n")
 
@@ -93,6 +93,7 @@ class IntegratedGradientsExplainer(Explainer):
 
     @staticmethod
     def batch_iterator(list1, list2, batch_size):
+        """ Iterates two list by batch_size. """
         # Ensure both input lists have the same length
         if len(list1) != len(list2):
             raise ValueError("Input lists must have the same length")

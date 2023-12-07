@@ -18,6 +18,6 @@ if __name__ == '__main__':
 
     texts = df["cleaned_text"].tolist()[:300]
 
-    label_ids_to_explain = [1]
+    label_ids_to_explain = [0, 1]
 
     mf.run_explainer(model, tokenizer, texts, label_ids_to_explain)

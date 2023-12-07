@@ -6,10 +6,12 @@ class Moderator(ABC):
     def __init__(self):
         return
 
-    def remove_words_mitigation(self):
+    @abstractmethod
+    def words_removal_mitigation_strategy(self):
         return
 
-    def remove_sentences_mitigation(self):
+    @abstractmethod
+    def sentences_removal_mitigation_strategy(self):
         return
 
 
@@ -18,7 +20,9 @@ class PandasDataFrameModerator(Moderator):
     def __init__(self):
         return
 
+    def words_removal_mitigation_strategy(self, df, protected_attributes, tokenizer, remove):
 
-class HFDatasetModerator(Moderator):
+
+class HuggingFaceDatasetModerator(Moderator):
     def __init__(self):
         return
