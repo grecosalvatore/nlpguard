@@ -149,7 +149,7 @@ class MitigationFramework:
             protected_attributes_dict[self.label2id[output_dict_key]] = protected_attributes_current_label
         return df_annotated, protected_attributes, protected_attributes_dict
 
-    def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
+    def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
         Args:
             df_train (:obj:`pandas.DataFrame`):
@@ -161,7 +161,18 @@ class MitigationFramework:
             batch_size (int, optional):
         """
         moderator = PandasDataFrameModerator()
-        df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately, batch_size)
+
+        if mitigation_strategy == "word_removal":
+            print("Mitigation Framework: Running Word Removal Mitigation Strategy")
+            df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately, batch_size)
+        elif mitigation_strategy == "sentence_removal":
+            print("Mitigation Framework: Running Sentence Removal Mitigation Strategy (TODO)")
+        elif mitigation_strategy == "word_replacement_with_synonym":
+            print("Mitigation Framework: Running Word Replacement with Synonyms Mitigation Strategy (TODO)")
+        elif mitigation_strategy == "word_replacement_with_hypernym":
+            print("Mitigation Framework: Running Word Replacement with Hypernyms Mitigation Strategy (TODO)")
+        else:
+            print("Mitigation Framework: Unknown Mitigation Strategy. Please select ....")
         return df_train_mitigated
 
     def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu"):
