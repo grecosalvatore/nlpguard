@@ -11,7 +11,7 @@ class Identifier(ABC):
     def __init__(self):
         return
 
-    def annotate_protected_attributes(self):
+    def annotate_protected_attributes(self, **kwargs):
         return
 
 

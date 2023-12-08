@@ -20,13 +20,13 @@ if __name__ == '__main__':
 
     df = pd.read_csv("saved_datasets/test.csv")
 
-    texts = df["cleaned_text"].tolist()[:30]
+    texts = df["cleaned_text"].tolist()[:300]
 
     label_ids_to_explain = [0, 1]
 
-    #output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
+    output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
 
-    #mf.run_identifier(output_dict)
+    mf.run_identifier(output_dict)
 
     protected_attributes_dict = {0: ["he", "his", "him", "himself"],
                                  1: ["she", "her", "hers", "herself, nurse, nursing"]}
