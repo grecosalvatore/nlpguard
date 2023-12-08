@@ -19,6 +19,7 @@ class Moderator(ABC):
 class PandasDataFrameModerator(Moderator):
     """ Moderator Implementation for Pandas DataFrames. """
     def __init__(self):
+        super().__init__()
         return
 
     def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
@@ -68,7 +69,16 @@ class PandasDataFrameModerator(Moderator):
 
         return clean_texts
 
-    def sentences_removal_mitigation_strategy(self, **kwargs):
+    def sentences_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
+        """ Performs the sentence removal mitigation strategy.
+        Args:
+            df_train (:obj:`pandas.DataFrame`): Training dataset.
+            tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
+            protected_attributes_per_label_dict (:obj:dict): Dictionary of protected attributes per class label.
+            text_column_name (str): Name of the column containing the text.
+            label_column_name (str): Name of the column containing the class label.
+            mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
+        """
         return
 
 
@@ -76,4 +86,5 @@ class PandasDataFrameModerator(Moderator):
 
 class HuggingFaceDatasetModerator(Moderator):
     def __init__(self):
+        super().__init__()
         return

@@ -86,6 +86,7 @@ class Explainer(ABC):
 class IntegratedGradientsExplainer(Explainer):
     """ Integrated Gradients implementation of the Explainer abstract class. """
     def __init__(self, model, tokenizer, device="cpu"):
+        super().__init__()
         self.model = model
         self.tokenizer = tokenizer
         self.model.to(device)
