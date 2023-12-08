@@ -57,11 +57,14 @@ if __name__ == '__main__':
     # If is False, the protected attributes identified for all the labels (e.g., "non-nurse" and "nurse" label) will be used to mitigate all the examples, independently of the original label
     mitigate_each_label_separately = False
 
+    #mitigation_strategy = "word_removal"
+    mitigation_strategy = "sentence_removal"
+
     # Run the moderator to mitigate the protected attributes identified by the identifier in the training dataset
     df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
                                           tokenizer,  # Model tokenizer
                                           protected_attributes_dict,  # Protected attributes identified by the identifier
-                                          mitigation_strategy="word_removal",  # Mitigation strategy to use
+                                          mitigation_strategy=mitigation_strategy,  # Mitigation strategy to use
                                           text_column_name="cleaned_text",  # Name of the column containing the texts
                                           label_column_name="label",  # Name of the column containing the labels
                                           mitigate_each_label_separately=mitigate_each_label_separately,  # Mitigate the protected attributes for each label separately or not

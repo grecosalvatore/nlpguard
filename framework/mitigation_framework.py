@@ -172,7 +172,15 @@ class MitigationFramework:
             print("Mitigation Framework: Running Word Removal Mitigation Strategy")
             df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, self.id2label, mitigate_each_label_separately, batch_size)
         elif mitigation_strategy == "sentence_removal":
-            print("Mitigation Framework: Running Sentence Removal Mitigation Strategy (TODO)")
+            print("Mitigation Framework: Running Sentence Removal Mitigation Strategy")
+            df_train_mitigated = moderator.sentences_removal_mitigation_strategy(df_train,
+                                                                                 tokenizer,
+                                                                                 protected_attributes_per_label_dict,
+                                                                                 text_column_name,
+                                                                                 label_column_name,
+                                                                                 self.id2label,
+                                                                                 mitigate_each_label_separately, batch_size)
+
         elif mitigation_strategy == "word_replacement_with_synonym":
             print("Mitigation Framework: Running Word Replacement with Synonyms Mitigation Strategy (TODO)")
         elif mitigation_strategy == "word_replacement_with_hypernym":
