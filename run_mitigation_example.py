@@ -39,9 +39,12 @@ if __name__ == '__main__':
                                    device=device  # Device to run the explainer on
                                    )
 
+    # Identify protected attributes from the 20 most important words extracted by the explainer for each label
+    number_most_important_words = 20
+
     #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
     df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict,  # Output of the explainer
-                                                                                      number_most_important_words=20  # Number of most important words to consider
+                                                                                      number_most_important_words=number_most_important_words  # Number of most important words to consider
                                                                                       )
 
     # Print the protected attributes identified separately for each label
@@ -56,6 +59,7 @@ if __name__ == '__main__':
     # For instance, if it is True, the protected attributes identified for the "nurse" label will be used to mitigate only the examples which original label is "nurse" and the same for "non-nurse"
     # If is False, the protected attributes identified for all the labels (e.g., "non-nurse" and "nurse" label) will be used to mitigate all the examples, independently of the original label
     mitigate_each_label_separately = False
+    #mitigate_each_label_separately = True
 
     mitigation_strategy = "word_removal"
     #mitigation_strategy = "sentence_removal"
