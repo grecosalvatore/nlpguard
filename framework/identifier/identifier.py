@@ -37,18 +37,18 @@ class ChatGPTIdentifier(Identifier):
                 chatgpt_main_category, chatgpt_category_main_score, chatgpt_explanation = chatgpt_response.split('|')
 
                 result.append({'word': tk,
-                               'chatgpt_main_category': chatgpt_main_category,
-                               'chatgpt_category_main_score': chatgpt_category_main_score,
-                               'chatgpt_explanation': chatgpt_explanation
+                               'chatgpt_protected_category': chatgpt_main_category,  # Protected category annotated by chatgpt
+                               'chatgpt_protected_category_score': chatgpt_category_main_score,  # Reliability score of the protected category
+                               'chatgpt_explanation': chatgpt_explanation  # Explanation provided for tha annotated category
                                })
             except Exception as ex:
                 try:
                     chatgpt_response = chatgpt_response.split('\n')[2]
                     chatgpt_main_category, chatgpt_category_main_score, chatgpt_explanation = chatgpt_response.split('|')
                     result.append({'word': tk,
-                                   'chatgpt_main_category': chatgpt_main_category,
-                                   'chatgpt_category_main_score': chatgpt_category_main_score,
-                                   'chatgpt_explanation': chatgpt_explanation
+                                   'chatgpt_protected_category': chatgpt_main_category,  # Protected category annotated by chatgpt
+                                   'chatgpt_protected_category_score': chatgpt_category_main_score,  # Reliability score of the protected category
+                                   'chatgpt_explanation': chatgpt_explanation  # Explanation provided for tha annotated category
                                    })
                 except Exception as ex:
                     print(f"{ex} in {tk}!")
@@ -60,7 +60,19 @@ class ChatGPTIdentifier(Identifier):
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S')
         filename = f"ChatGPT-annotation-{timestamp}"
 
-        #pd.DataFrame(result).to_csv(f"chatgpt_annotation/{filename}.csv", index=None)
+        df_annotated = pd.DataFrame(result)
+
+        df_cleaned = self._clean_chatgpt_responses(df_annotated)
+
+        result, acc_list = self._aggregate_protected_categories_votes(df_cleaned)
+
+        print(result)
+
+        print(acc_list)
+
+        print()
+
+        #df_annotated.to_csv(f"chatgpt_annotation/{filename}.csv", index=None)
 
         #with open(f'chatgpt_annotation/raw_responses/{filename}.txt', 'w') as responses_file:
         #    responses_file.writelines(raw_responses)
@@ -68,7 +80,57 @@ class ChatGPTIdentifier(Identifier):
         #with open(f'chatgpt_annotation/log/{filename}.txt', 'w') as responses_file:
         #    responses_file.writelines(exception_logs)
 
-        return
+        return df_annotated
+
+    def _clean_chatgpt_responses(self, df_raw,  protected_category_column_name="chatgpt_protected_category"):
+        """ Cleans the chatgpt response.
+        Args:
+            df (pd.DataFrame): The dataframe containing the chatgpt response.
+        """
+        df = df_raw.copy()
+        df["word"] = df["word"].str.lower()
+        df["word"] = df["word"].str.strip()
+        df[protected_category_column_name] = df[protected_category_column_name].str.lower()
+        df[protected_category_column_name] = df[protected_category_column_name].str.strip()
+
+        # Replace the "None" category with "none-category"
+        df[protected_category_column_name].replace('none', 'none-category', inplace=True)
+        df[protected_category_column_name] = df[protected_category_column_name].fillna("none-category")
+
+        # Correct errors in the response provided by chatgpt for some categories
+        df[protected_category_column_name].replace('"pregnancy and maternity', 'pregnancy and maternity', inplace=True)
+        df[protected_category_column_name].replace('"disability', 'disability', inplace=True)
+        df[protected_category_column_name].replace('"race', 'race', inplace=True)
+        #df[protected_category_column_name].replace('proper name', 'none-category', inplace=True)
+        return df
+
+    @staticmethod
+    def _aggregate_protected_categories_votes(df, protected_category_column_name="chatgpt_protected_category"):
+        # Compute the counts in a single grouped operation
+        grouped = df.groupby('word')[protected_category_column_name].value_counts().unstack(fill_value=0)
+
+        # Add a total count column
+        grouped['count_tot'] = grouped.sum(axis=1)
+
+        # Check if 'none-category' column exists and rename it to 'count_non_pa'
+        if 'none-category' in grouped.columns:
+            grouped = grouped.rename(columns={'none-category': 'count_non_pa'})
+            # Calculate 'count_pa' (which is count_tot - count_non_pa)
+            grouped['count_pa'] = grouped['count_tot'] - grouped['count_non_pa']
+        else:
+            # If 'none-category' column doesn't exist, set 'count_non_pa' to 0 and 'count_pa' to 'count_tot'
+            grouped['count_non_pa'] = 0
+            grouped['count_pa'] = grouped['count_tot']
+
+        # Reset the index to turn 'word' back into a column
+        grouped = grouped.reset_index()
+
+        # Select only the required columns
+        result = grouped[['word', 'count_pa', 'count_non_pa', 'count_tot']]
+
+        # Convert to a list of dictionaries, if needed
+        acc_list = result.to_dict('records')
+        return result, acc_list
 
     @staticmethod
     def _chatgpt_annotate(tk, temperature=0.3, chatgpt_model="gpt-3.5-turbo"):

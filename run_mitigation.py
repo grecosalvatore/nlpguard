@@ -26,7 +26,9 @@ if __name__ == '__main__':
 
     output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
 
-    mf.run_identifier(output_dict)
+    df_annotated = mf.run_identifier(output_dict)
+
+    print(df_annotated.head(30))
 
     protected_attributes_dict = {0: ["he", "his", "him", "himself"],
                                  1: ["she", "her", "hers", "herself, nurse, nursing"]}

@@ -134,12 +134,12 @@ class MitigationFramework:
             identifier = ChatGPTIdentifier()
 
             # Annotating the protected attributes with ChatGPT
-            identifier.annotate_protected_attributes(distinct_words)
+            df_annotated = identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
             print("MTurk Identifier")
         else:
             print("Unknown Identifier method")
-        return
+        return df_annotated
 
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
