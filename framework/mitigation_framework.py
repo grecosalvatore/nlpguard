@@ -8,8 +8,14 @@ import datetime
 from tqdm import tqdm
 import pandas as pd
 
+
 class MitigationFramework:
-    """ """
+    """ Mitigation Framework class. It is used to run the mitigation framework.
+    It is composed of three main components: Explainer, Identifier and Moderator.
+    The Explainer is used to extract the most important words from a corpus of texts.
+    The Identifier is used to identify the protected attributes from the most important words extracted by the explainer.
+    The Moderator is used to mitigate the protected attributes identified by the identifier in a corpus of texts.
+    """
     def __init__(self):
         self.use_case_name = None
         self.output_folder = None
@@ -164,7 +170,7 @@ class MitigationFramework:
 
         if mitigation_strategy == "word_removal":
             print("Mitigation Framework: Running Word Removal Mitigation Strategy")
-            df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately, batch_size)
+            df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, self.id2label, mitigate_each_label_separately, batch_size)
         elif mitigation_strategy == "sentence_removal":
             print("Mitigation Framework: Running Sentence Removal Mitigation Strategy (TODO)")
         elif mitigation_strategy == "word_replacement_with_synonym":

@@ -33,7 +33,7 @@ class PandasDataFrameModerator(Moderator):
         super().__init__()
         return
 
-    def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
+    def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
         """ Performs the word removal mitigation strategy.
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
@@ -41,6 +41,7 @@ class PandasDataFrameModerator(Moderator):
             protected_attributes_per_label_dict (:obj:dict): Dictionary of protected attributes per class label.
             text_column_name (str): Name of the column containing the text.
             label_column_name (str): Name of the column containing the class label.
+            id2label (:obj:dict): Dictionary mapping class label ids to class label names.
             mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
         """
         if mitigate_each_label_separately == False:
@@ -49,6 +50,16 @@ class PandasDataFrameModerator(Moderator):
 
             # Apply the mitigation strategy in batches to all class labels
             df_train['mitigated_text'] = pd.concat([pd.Series(self._batch_words_removal(df_train[text_column_name][i:i + batch_size], tokenizer, distinct_protected_attributes)) for i in range(0, df_train.shape[0], batch_size)], ignore_index=True)
+        else:
+            # Apply the mitigation strategy in batches to each class label separately
+            for label_id in protected_attributes_per_label_dict.keys():
+                # Remove words related to protected attributes from current label
+                distinct_protected_attributes = list(set(word for words_list in protected_attributes_per_label_dict[label_id] for word in words_list))
+
+                label_name = id2label[label_id]
+
+                # Apply the mitigation strategy in batches to current class label
+                df_train.loc[df_train[label_column_name] == label_name, 'mitigated_text'] = pd.concat([pd.Series(self._batch_words_removal(df_train.loc[df_train[label_column_name] == label_name, text_column_name][i:i + batch_size], tokenizer, distinct_protected_attributes)) for i in range(0, df_train.loc[df_train[label_column_name] == label_name].shape[0], batch_size)], ignore_index=True)
         return df_train
 
 

@@ -25,8 +25,9 @@ class Explainer(ABC):
             df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
             df_current_global = self._compute_global_scores(df_current)
             df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_scores_{label_name}.csv"))
+            print(f"\nGlobal Explanations for label: {label_name}")
             print(df_current_global)
-            print("\n\n")
+            print("\n")
 
             output_dict[label_name] = df_current_global["tokens"].tolist()
 
@@ -49,7 +50,7 @@ class Explainer(ABC):
         return df
 
     @staticmethod
-    def _compute_global_scores(df):
+    def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##"):
         df_grp = df.groupby(["tokens"]).sum().reset_index()
 
         df_freq = df.groupby(["tokens"]).size().reset_index(name='freq')
@@ -70,9 +71,9 @@ class Explainer(ABC):
 
         df_global = df_global.sort_values(by='score_norm', ascending=False)
 
-        df_global = df_global.loc[df_global.freq > 1]
+        df_global = df_global.loc[df_global.freq >= minimum_frequency]
 
-        df_global = df_global.loc[~df_global.tokens.str.startswith("##")]
+        df_global = df_global.loc[~df_global.tokens.str.startswith(subtoken_separator)]
 
         df_global = df_global.loc[df_global.tokens.str.len() > 2]
 

@@ -73,3 +73,5 @@ if __name__ == '__main__':
 
     # Save the mitigated dataset to disk
     df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)
+
+    print("End of the mitigation example.")
