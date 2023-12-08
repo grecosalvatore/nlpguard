@@ -121,7 +121,7 @@ class PandasDataFrameModerator(Moderator):
                     break
 
             if contains_protected_attribute:
-                clean_texts.append("")
+                clean_texts.append(None)
             else:
                 clean_texts.append(texts.tolist()[i])
 
@@ -147,7 +147,7 @@ class PandasDataFrameModerator(Moderator):
 
             # Apply the mitigation strategy in batches to all class labels
             df_train['mitigated_text'] = pd.concat([pd.Series(self._batch_sentences_removal(df_train[text_column_name][i:i + batch_size], tokenizer, distinct_protected_attributes)) for i in range(0, df_train.shape[0], batch_size)], ignore_index=True)
-        return
+        return df_train
 
     # TODO - Implement the following mitigation strategies
     def word_replacement_with_one_synonym_mitigation_strategy(self, **kwargs):
