@@ -17,10 +17,20 @@ class Moderator(ABC):
 
 
 class PandasDataFrameModerator(Moderator):
+    """ Moderator Implementation for Pandas DataFrames. """
     def __init__(self):
         return
 
     def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
+        """ Performs the word removal mitigation strategy.
+        Args:
+            df_train (:obj:`pandas.DataFrame`): Training dataset.
+            tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
+            protected_attributes_per_label_dict (:obj:dict): Dictionary of protected attributes per class label.
+            text_column_name (str): Name of the column containing the text.
+            label_column_name (str): Name of the column containing the class label.
+            mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
+        """
         if mitigate_each_label_separately == False:
             # Remove words related to protected attributes from all labels
             distinct_protected_attributes = list(set(word for words_list in protected_attributes_per_label_dict.values() for word in words_list))
@@ -31,7 +41,13 @@ class PandasDataFrameModerator(Moderator):
 
 
     @staticmethod
-    def _batch_words_removal(texts, tokenizer, words_to_remove):
+    def _batch_words_removal(texts, tokenizer, protected_attributes):
+        """ Removes words from texts in batch.
+        Args:
+            texts (:obj:`list` of :obj:`str`): List of texts.
+            tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
+            protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
+        """
         # Tokenize the texts in batch
         encoded_inputs = tokenizer(texts.tolist(), add_special_tokens=False, return_tensors='pt', padding=True)
 
@@ -47,7 +63,7 @@ class PandasDataFrameModerator(Moderator):
             tokens = [tokenizer.convert_ids_to_tokens(id.item()) for id in input_ids]
 
             # Remove unwanted tokens and reconstruct the text
-            tokens = [t for t in tokens if t not in words_to_remove]
+            tokens = [t for t in tokens if t not in protected_attributes]
             clean_texts.append(tokenizer.convert_tokens_to_string(tokens))
 
         return clean_texts
