@@ -5,42 +5,64 @@ import torch
 
 
 if __name__ == '__main__':
+
+    # Mapping label ids to label names
     id2label = {0: "non-nurse", 1:"nurse"}
 
+    # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # Instantiate the Mitigation Framework
     mf = MitigationFramework()
     mf.initialize_mitigation_framework(id2label=id2label,
                                        use_case_name="nurse_vs_all")
 
     model_name_or_path = "saved_models/nurse_vs_all/bert-base-uncased/best_model/"
 
+    # Load model and tokenizer from disk
     model = AutoModelForSequenceClassification.from_pretrained(model_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
+    # Load test data to perform the explanations on
     df = pd.read_csv("saved_datasets/test.csv")
-
+    # Select only the first 300 texts for the sake of time
     texts = df["cleaned_text"].tolist()[:300]
 
+    # Labels to per perform the explanations on (0: non-nurse, 1: nurse)
     label_ids_to_explain = [0, 1]
 
-    output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
+    # Run the explainer. It returns a dictionary with, for each label id, the list of most important words
+    output_dict = mf.run_explainer(model,  # Explained model
+                                   tokenizer, # Model Tokenizer
+                                   texts,  # Unlabeled corpus of texts to explain and extract most important words
+                                   label_ids_to_explain,  # Labels to explain
+                                   device=device  # Device to run the explainer on
+                                   )
 
-    df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict, number_most_important_words=20)
+    #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
+    df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict,  # Output of the explainer
+                                                                                      number_most_important_words=20  # Number of most important words to consider
+                                                                                      )
 
-    #print(df_annotated.head(30))
-
-    #protected_attributes_dict = {0: ["he", "his", "him", "himself"],
-    #                             1: ["she", "her", "hers", "herself, nurse, nursing"]}
-
+    # Print the protected attributes identified separately for each label
     print(protected_attributes_dict)
 
+    # Load the training dataset (in this case the test dataset for the sake of time) to mitigate
     df_train = pd.read_csv("saved_datasets/test.csv")
+    # Select only the first 500 texts for the sake of time
     df_train = df_train.iloc[:500]
 
-    df_train_mitigated = mf.run_moderator(df_train, tokenizer, protected_attributes_dict,
-                                          text_column_name="cleaned_text", label_column_name="label",
-                                          mitigate_each_label_separately=False, batch_size=128)
+    # Run the moderator to mitigate the protected attributes identified by the identifier in the training dataset
+    df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
+                                          tokenizer,  # Model tokenizer
+                                          protected_attributes_dict,  # Protected attributes identified by the identifier
+                                          text_column_name="cleaned_text",  # Name of the column containing the texts
+                                          label_column_name="label",  # Name of the column containing the labels
+                                          mitigate_each_label_separately=False,  # Mitigate the protected attributes for each label separately or not
+                                          batch_size=128  # Batch size to use for the mitigation
+                                          )
 
     print(df_train_mitigated.head(30))
+
+    # Save the mitigated dataset to disk
     df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)

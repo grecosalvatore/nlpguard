@@ -14,6 +14,17 @@ class Moderator(ABC):
     def sentences_removal_mitigation_strategy(self, **kwargs):
         return
 
+    @abstractmethod
+    def word_replacement_with_one_synonym_mitigation_strategy(self, **kwargs):
+        return
+
+    @abstractmethod
+    def word_replacement_with_k_synonym_mitigation_strategy(self, **kwargs):
+        return
+
+    @abstractmethod
+    def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
+        return
 
 
 class PandasDataFrameModerator(Moderator):
@@ -81,10 +92,22 @@ class PandasDataFrameModerator(Moderator):
         """
         return
 
+    # TODO - Implement the following mitigation strategies
+    def sentences_removal_mitigation_strategy(self, **kwargs):
+        return
 
+    def word_replacement_with_one_synonym_mitigation_strategy(self, **kwargs):
+        return
+
+    def word_replacement_with_k_synonym_mitigation_strategy(self, **kwargs):
+        return
+
+    def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
+        return
 
 
 class HuggingFaceDatasetModerator(Moderator):
+    # TODO - Implement the HUGGINGFACE Dataset Moderator
     def __init__(self):
         super().__init__()
         return

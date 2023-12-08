@@ -136,12 +136,13 @@ class MitigationFramework:
             # Annotating the protected attributes with ChatGPT
             df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
-            print("MTurk Identifier")
+            print("Mitigation Framework: Running MTurk Identification of Protected Attributes")
         else:
             print("Unknown Identifier method")
 
         protected_attributes_dict = {}
         # Printing the protected attributes for each label
+        print("Identifier - Protected Attributes per Label:")
         for output_dict_key in output_dict.keys():
             protected_attributes_current_label = [word for word in output_dict[output_dict_key] if word in protected_attributes]
             print(f"Label {output_dict_key} - Protected Attributes: {protected_attributes_current_label}")

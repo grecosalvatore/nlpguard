@@ -74,6 +74,7 @@ class ChatGPTIdentifier(Identifier):
 
         print(f"Identifier - Identified Protected Attributes: {protected_attributes}")
 
+        # TODO - Add logic to save annotation and create a dynamic dictionary of protected attributes
         #df_annotated.to_csv(f"chatgpt_annotation/{filename}.csv", index=None)
 
         #with open(f'chatgpt_annotation/raw_responses/{filename}.txt', 'w') as responses_file:
@@ -103,7 +104,6 @@ class ChatGPTIdentifier(Identifier):
         df[protected_category_column_name].replace('"pregnancy and maternity', 'pregnancy and maternity', inplace=True)
         df[protected_category_column_name].replace('"disability', 'disability', inplace=True)
         df[protected_category_column_name].replace('"race', 'race', inplace=True)
-        #df[protected_category_column_name].replace('proper name', 'none-category', inplace=True)
         return df
 
     @staticmethod
@@ -181,48 +181,3 @@ class ChatGPTIdentifier(Identifier):
 
         return completion.choices[0].message.content
 
-    @staticmethod
-    def _chatgpt_annotate_old(tk, temperature=0.3, chatgpt_model="gpt-3.5-turbo"):
-        """ Performs annotation using ChatGPT of the input token.
-        Args:
-            tk (str): The token to be annotated.
-            temperature (float): The temperature of the ChatGPT model.
-            chatgpt_model (str): The ChatGPT model to be used.
-        """
-        response = openai.ChatCompletion.create(
-            model=chatgpt_model,
-            messages=[
-                {'role': 'user', 'content': '''Consider these 9 protected categories defined by the Equality Act law to avoid discrimination of automatic decision-making algorithms:
-                "Age": A person belonging to a particular age (for example, 32 year olds) or range of ages (for example 18 to 30 year olds).
-                "Disability": A person has a disability if she or he has a physical or mental impairment which has a substantial and long-term adverse effect on that person's ability to carry out normal day-to-day activities.
-                "Gender reassignment": The process of transitioning from one sex to another.
-                "Marriage and civil partnership": Marriage is a union between a man and a woman or between a same-sex couple. Same-sex couples can also have their relationships legally recognised as 'civil partnerships'. Civil partners must not be treated less favourably than married couples.
-                "Pregnancy and maternity": Pregnancy is the condition of being pregnant or expecting a baby. Maternity refers to the period after the birth, and is linked to maternity leave in the employment context. In the non-work context, protection against maternity discrimination is for 26 weeks after giving birth, and this includes treating a woman unfavourably because she is breastfeeding.
-                "Race": Refers to the protected characteristic of race. It refers to a group of people defined by their race, colour, and nationality (including citizenship) ethnic or national origins.
-                "Religion and belief": Religion refers to any religion, including a lack of religion. Belief refers to any religious or philosophical belief and includes a lack of belief. Generally, a belief should affect your life choices or the way you live for it to be included in the definition.
-                "Sex": A word that explicitly refers to the gender of a person: e.g., man or woman, she or he, mr or mrs, male of female, madame etc.
-                "Sexual orientation": Whether a person's sexual attraction is towards their own sex, the opposite sex or to both sexes.
-                '''},
-                {'role': 'user', 'content': """You can learn more about the discriminations along each protected characteristic on the following URLs:
-                "Age" : https://www.equalityhumanrights.com/en/advice-and-guidance/age-discrimination
-                "Disability":https://www.equalityhumanrights.com/en/disability-advice-and-guidance
-                "Gender reassignment": https://www.equalityhumanrights.com/en/advice-and-guidance/gender-reassignment-discrimination
-                "Marriage and civil partnership": https://www.equalityhumanrights.com/en/advice-and-guidance/marriage-and-civil-partnership-discrimination
-                "Pregnancy and maternity": https://www.equalityhumanrights.com/en/node/5916
-                "Race": https://www.equalityhumanrights.com/en/advice-and-guidance/race-discrimination
-                "Religion and belief": https://www.equalityhumanrights.com/en/religion-or-belief-work
-                "Sex": https://www.equalityhumanrights.com/en/advice-and-guidance/sex-discrimination
-                "Sexual orientation": https://www.equalityhumanrights.com/en/advice-and-guidance/sexual-orientation-discrimination   """},
-
-                {'role': 'user', 'content': f"""Given the previously defined protected categories "Age", "Disability", "Gender reassignment", "Marriage and civil partnership", "Pregnancy and maternity", "Race", "Religion and belief", "Sex", "Sexual orientation". 
-                How would you classify the word "{tk}" and which [0,100] reliability scores (only one) would you give to your assessment? You must assign one category. 
-                If a word does not fit any categories, you must assign the category "None" with the reliability score and the relative explanation. 
-                Provide the answer in the format: "Protected Category|Reliability Score from 0 to 100 for the protected category|Explanation of why the word belong to the protected category.". 
-                In case of a word does not fall into any category, provide the answer in the format: "None|Reliability Score from 0 to 100 for the None category|Explanation of why the word does not fall under any of the defined protected categories. 
-                Each answer MUST have exactly two | symbols and only one line; otherwise, I cannot process your response. 
-                Please annotate a word to a protected category only if it is strictly related. """}
-            ],
-            temperature=temperature,
-        )
-
-        return response.choices[0]['message']['content']
