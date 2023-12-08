@@ -119,7 +119,7 @@ class MitigationFramework:
 
         return output_dict
 
-    def run_identifier(self, output_dict, identifier_method="chatgpt"):
+    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
             output_dict (:obj:dict):
@@ -127,19 +127,26 @@ class MitigationFramework:
         """
         if identifier_method == "chatgpt":
             # Extracting distinct words from most important words for each label
-            distinct_words = list(set(word for words_list in output_dict.values() for word in words_list))
+            distinct_words = list(set(word for words_list in output_dict.values() for word in words_list[:number_most_important_words]))
 
             print("Mitigation Framework: Running ChatGPT Identification of Protected Attributes")
             # Instantiating the ChatGPT implementation of the Identifier
             identifier = ChatGPTIdentifier()
 
             # Annotating the protected attributes with ChatGPT
-            df_annotated = identifier.annotate_protected_attributes(distinct_words)
+            df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
             print("MTurk Identifier")
         else:
             print("Unknown Identifier method")
-        return df_annotated
+
+        protected_attributes_dict = {}
+        # Printing the protected attributes for each label
+        for output_dict_key in output_dict.keys():
+            protected_attributes_current_label = [word for word in output_dict[output_dict_key] if word in protected_attributes]
+            print(f"Label {output_dict_key} - Protected Attributes: {protected_attributes_current_label}")
+            protected_attributes_dict[self.label2id[output_dict_key]] = protected_attributes_current_label
+        return df_annotated, protected_attributes, protected_attributes_dict
 
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigate_each_label_separately=False, batch_size=128):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.

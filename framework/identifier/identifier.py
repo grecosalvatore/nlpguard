@@ -68,9 +68,11 @@ class ChatGPTIdentifier(Identifier):
 
         print(result)
 
-        print(acc_list)
+        protected_attributes = result.loc[result.count_pa > result.count_non_pa].word.tolist()
 
-        print()
+
+
+        print(f"Identifier - Identified Protected Attributes: {protected_attributes}")
 
         #df_annotated.to_csv(f"chatgpt_annotation/{filename}.csv", index=None)
 
@@ -80,7 +82,7 @@ class ChatGPTIdentifier(Identifier):
         #with open(f'chatgpt_annotation/log/{filename}.txt', 'w') as responses_file:
         #    responses_file.writelines(exception_logs)
 
-        return df_annotated
+        return result, protected_attributes
 
     def _clean_chatgpt_responses(self, df_raw,  protected_category_column_name="chatgpt_protected_category"):
         """ Cleans the chatgpt response.

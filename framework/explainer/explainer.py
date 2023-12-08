@@ -28,7 +28,7 @@ class Explainer(ABC):
             print(df_current_global)
             print("\n\n")
 
-            output_dict[label_name] = df_current_global["tokens"].tolist()[:10]
+            output_dict[label_name] = df_current_global["tokens"].tolist()
 
         return output_dict
 

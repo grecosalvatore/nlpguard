@@ -26,13 +26,14 @@ if __name__ == '__main__':
 
     output_dict = mf.run_explainer(model, tokenizer, texts, label_ids_to_explain, device=device)
 
-    df_annotated = mf.run_identifier(output_dict)
+    df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict, number_most_important_words=20)
 
-    print(df_annotated.head(30))
+    #print(df_annotated.head(30))
 
-    protected_attributes_dict = {0: ["he", "his", "him", "himself"],
-                                 1: ["she", "her", "hers", "herself, nurse, nursing"]}
+    #protected_attributes_dict = {0: ["he", "his", "him", "himself"],
+    #                             1: ["she", "her", "hers", "herself, nurse, nursing"]}
 
+    print(protected_attributes_dict)
 
     df_train = pd.read_csv("saved_datasets/test.csv")
     df_train = df_train.iloc[:500]
