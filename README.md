@@ -1,12 +1,39 @@
 # A Framework for Mitigating the use of Protected Attributes by NLP classifiers
 
 # Table of Contents
-- [Setup](#setup)
 - [Mitigation Framework](#mitigation-framework)
+- [Setup](#setup)
+- [Getting Started](#getting-started)
 - [References](#references)
+- [Future Developments](#future-developments)
+
+
+
+# Mitigation Framework
+![Screenshot](images/mitigation-framework-architecture.png)
+
+The mitigation framework that takes an unlabelled corpus of documents, an existing NLP classifier and its training dataset as input to produce a mitigated training
+corpus that significantly reduces the learning that takes place on protected attributes without sacrificing
+classification accuracy. It does so by means of three components: 
+* **Explainer**: detects the most important words used by the classifier to make predictions;
+* **Identifier**: detects which of these words are protected attributes;
+* **Moderator**: re-trains the classifier to minimize the learning on protected words.
+
+## 1) Explainer
+The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
+To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
+The framework currently supports the following XAI techniques:
+* Integrated Gradients
+* SHAP(TODO)
+
+## 2) Identifier
+* ChatGPT
+
+## 3) Moderator
+* Words Removal
+* Sentences Removal
 
 # Setup
-
 1) Create and Start a new environment:
 ```sh
 conda create -n protected-attributes-mitigation-env python=3.8 anaconda
@@ -66,6 +93,9 @@ df_train = pd.read_csv("saved_datasets/test.csv")
 # If is False, the protected attributes identified for all the labels (e.g., "non-nurse" and "nurse" label) will be used to mitigate all the examples, independently of the original label
 mitigate_each_label_separately = False
 
+# Select the mitigation strategy to use
+mitigation_strategy = "words_removal"  # Mitigation strategy to use. It can be "words_removal" or "sentences_removal"
+
 # Run the moderator to mitigate the protected attributes identified by the identifier in the training dataset
 df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
                                       tokenizer,  # Model tokenizer
@@ -79,33 +109,11 @@ df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
 
 # Save the mitigated dataset to disk
 df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)
-
-
 ```
 
-# Mitigation Framework
-![Screenshot](images/mitigation-framework-architecture.png)
-
-The mitigation framework that takes an unlabelled corpus of documents, an existing NLP classifier and its training dataset as input to produce a mitigated training
-corpus that significantly reduces the learning that takes place on protected attributes without sacrificing
-classification accuracy. It does so by means of three components: 
-* **Explainer**: detects the most important words used by the classifier to make predictions;
-* **Identifier**: detects which of these words are protected attributes;
-* **Moderator**: re-trains the classifier to minimize the learning on protected words.
-
-## 1) Explainer
-The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
-To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
-The framework currently supports the following XAI techniques:
-* Integrated Gradients
-* SHAP(TODO)
-
-## 2) Identifier
-* ChatGPT
-
-## 3) Moderator
-* Words Removal
-* Sentences Removal
+# Future Developments
+* Add support for SHAP
+* Add support for other XAI techniques
 
 # References
 ```bibtex
@@ -113,8 +121,8 @@ The framework currently supports the following XAI techniques:
 ```
 
 # Authors
-- Salvatore Greco
-- Ke Zhou
-- Licia Capra
-- Tania Cerquitelli
-- Daniele Quercia
+- Salvatore Greco, *Politecnico di Torino*
+- Ke Zhou, *Nokia Bell Labs*
+- Licia Capra, *University College London*
+- Tania Cerquitelli, *Politecnico di Torino*
+- Daniele Quercia, *Nokia Bell Labs*
