@@ -26,6 +26,21 @@ classification accuracy. It does so by means of three components:
 * **Explainer**: detects the most important words used by the classifier to make predictions;
 * **Identifier**: detects which of these words are protected attributes;
 * **Moderator**: re-trains the classifier to minimize the learning on protected words.
+
+## 1) Explainer
+The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
+To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
+The framework currently supports the following XAI techniques:
+* [Integrated Gradients]()
+* [SHAP(TODO)]()
+
+## 2) Identifier
+* [ChatGPT]()
+
+## 3) Moderator
+* [Words Removal]()
+* [Sentences Removal]()
+
 # References
 ```bibtex
 
