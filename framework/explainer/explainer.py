@@ -17,6 +17,14 @@ class Explainer(ABC):
 
 
     def global_explanations(self, label_ids_to_explain, id2label, explainer_output_folder):
+        """ Computes global explanations for a set of class labels.
+        Args:
+            label_ids_to_explain (list): List of class label ids to explain.
+            id2label
+            explainer_output_folder (str): Path to the folder containing the local explanations.
+        Returns:
+            dict: Dictionary containing the global explanations for each class label.
+        """
 
         output_dict = {}
 
@@ -35,6 +43,12 @@ class Explainer(ABC):
 
     @staticmethod
     def _load_local_explanations(dir_path):
+        """ Loads local explanations from a directory.
+        Args:
+            dir_path (str): Path to the directory containing the local explanations.
+        Returns:
+            pd.DataFrame: Dataframe containing the local explanations.
+        """
         df_list = []
 
         for path in os.listdir(dir_path):
@@ -51,6 +65,14 @@ class Explainer(ABC):
 
     @staticmethod
     def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##"):
+        """ Computes overall importance scores (global explanations) for each token by aggregating their importance withing individual predictions (local explanations).
+        Args:
+            df (pd.DataFrame): Dataframe containing local explanations.
+            minimum_frequency (int, optional): Minimum frequency of a token to be considered in the global explanations. Defaults to 2.
+            subtoken_separator (str, optional): Subtoken separator used by the tokenizer. Defaults to "##".
+        Returns:
+            pd.DataFrame: Dataframe containing the global explanations.
+        """
         df_grp = df.groupby(["tokens"]).sum().reset_index()
 
         df_freq = df.groupby(["tokens"]).size().reset_index(name='freq')
@@ -99,7 +121,14 @@ class IntegratedGradientsExplainer(Explainer):
 
     @staticmethod
     def batch_iterator(list1, list2, batch_size):
-        """ Iterates two list by batch_size. """
+        """ Iterates two list by batch_size.
+        Args:
+            list1 (list): First list.
+            list2 (list): Second list.
+            batch_size (int): Batch size.
+        Yields:
+            tuple: Tuple containing the current batch of list1, list2, start_index and end_index.
+        """
         # Ensure both input lists have the same length
         if len(list1) != len(list2):
             raise ValueError("Input lists must have the same length")

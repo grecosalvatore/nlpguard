@@ -8,22 +8,22 @@ class Moderator(ABC):
 
     @abstractmethod
     def words_removal_mitigation_strategy(self, **kwargs):
+        """ Abstract method to perform the word removal mitigation strategy. """
         return
 
     @abstractmethod
     def sentences_removal_mitigation_strategy(self, **kwargs):
+        """ Abstract method to perform the sentence removal mitigation strategy. """
         return
 
     @abstractmethod
-    def word_replacement_with_one_synonym_mitigation_strategy(self, **kwargs):
-        return
-
-    @abstractmethod
-    def word_replacement_with_k_synonym_mitigation_strategy(self, **kwargs):
+    def word_replacement_with_synonyms_mitigation_strategy(self, **kwargs):
+        """ Abstract method to perform the word replacement with synonyms mitigation strategy. """
         return
 
     @abstractmethod
     def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
+        """ Abstract method to perform the word replacement with hypernym mitigation strategy. """
         return
 
 
@@ -62,7 +62,6 @@ class PandasDataFrameModerator(Moderator):
                 # Apply the mitigation strategy in batches to current class label
                 df_train.loc[df_train[label_column_name] == label_name, 'mitigated_text'] = pd.concat([pd.Series(self._batch_words_removal(df_train.loc[df_train[label_column_name] == label_name, text_column_name][i:i + batch_size], tokenizer, distinct_protected_attributes)) for i in range(0, df_train.loc[df_train[label_column_name] == label_name].shape[0], batch_size)], ignore_index=True)
         return df_train
-
 
     @staticmethod
     def _batch_words_removal(texts, tokenizer, protected_attributes):
@@ -127,7 +126,6 @@ class PandasDataFrameModerator(Moderator):
 
         return clean_texts
 
-
     def sentences_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
         """ Performs the sentence removal mitigation strategy.
         Args:
@@ -156,11 +154,8 @@ class PandasDataFrameModerator(Moderator):
                 df_train.loc[df_train[label_column_name] == label_name, 'mitigated_text'] = pd.concat([pd.Series(self._batch_sentences_removal(df_train.loc[df_train[label_column_name] == label_name, text_column_name][i:i + batch_size], tokenizer, distinct_protected_attributes)) for i in range(0, df_train.loc[df_train[label_column_name] == label_name].shape[0], batch_size)], ignore_index=True)
         return df_train
 
-    # TODO - Implement the following mitigation strategies
-    def word_replacement_with_one_synonym_mitigation_strategy(self, **kwargs):
-        return
-
-    def word_replacement_with_k_synonym_mitigation_strategy(self, **kwargs):
+    # TODO - Implement the following mitigation strategies for Pandas DataFrames
+    def word_replacement_with_synonyms_mitigation_strategy(self, **kwargs):
         return
 
     def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
