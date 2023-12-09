@@ -26,26 +26,24 @@ class MitigationFramework:
         self.label2id = None
         return
 
-
     def initialize_mitigation_framework(self, id2label, use_case_name=None, output_folder=None):
         """ Initializes the output folders.
             Args:
-                use_case_name (str):
-                output_folder (str):
-                labels2id (dict):
+                use_case_name (str): Name of the use case. It is used to create a new folder in the output folder.
+                output_folder (str): Path to the output folder.
+                labels2id (dict): Dictionary mapping label names to label ids.
         """
         self.id2label = id2label
         self.label2id = {v: k for k, v in id2label.items()}
         self.output_folder, self.use_case_name, self.explainer_output_folder, self.identifier_output_folder, self.moderator_output_folder = self._init_output_folders(use_case_name, output_folder)
         return
 
-
     @staticmethod
     def _init_output_folders(use_case_name, output_folder):
         """ Initializes the output folders.
         Args:
-            use_case_name (str):
-            output_folder (str):
+            use_case_name (str): Name of the use case. It is used to create a new folder in the output folder.
+            output_folder (str): Path to the output folder.
         """
         # Init output folder. If output folder is not specified, the dafault is "outputs".
         if output_folder is None:
@@ -90,17 +88,18 @@ class MitigationFramework:
         return output_folder, use_case_name, explainer_output_folder, identifier_output_folder, moderator_output_folder
 
     def run_full_mitigation_pipeline(self, use_case_name=None, output_folder=None):
+        # TODO: implement full mitigation pipeline in one function (explainer + identifier + moderator)
         return
 
     def run_explainer(self, model, tokenizer, texts, label_ids_to_explain,  explainer_method="integrated-gradients", batch_size=128, device="cpu"):
         """
         Args:
-            model (:obj:`transformers.AutoModelForSequenceClassification`):
-            tokenizer (:obj:`transformers.AutoTokenizer`):
-            texts (:obj:List[str]):
-            label_ids_to_explain (List[int]):
-            explainer_method (str):
-            device (str, optional):
+            model (:obj:`transformers.AutoModelForSequenceClassification`): The model to explain.
+            tokenizer (:obj:`transformers.AutoTokenizer`): The tokenizer to use to preprocess the inputs.
+            texts (:obj:List[str]): The texts to explain.
+            label_ids_to_explain (List[int]): The label ids to explain.
+            explainer_method (str): The explainer method to use. The default is Integrated Gradients.
+            device (str, optional): The device to run the explainer on. The default is "cpu".
         """
 
         if explainer_method == "integrated-gradients":
@@ -128,8 +127,9 @@ class MitigationFramework:
     def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
-            output_dict (:obj:dict):
-            identifier_method (str, optinal):
+            output_dict (:obj:dict): Dictionary containing the most important words for each label.
+            identifier_method (str, optional): Method to use for identifying protected attributes. Defaults to "chatgpt".
+            number_most_important_words (int, optional): Number of most important words to use for identifying protected attributes. Defaults to 400.
         """
         if identifier_method == "chatgpt":
             # Extracting distinct words from most important words for each label
@@ -158,13 +158,14 @@ class MitigationFramework:
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
         Args:
-            df_train (:obj:`pandas.DataFrame`):
-            tokenizer (:obj:`transformers.AutoTokenizer`):
-            protected_attributes_per_label_dict (:obj:dict):
-            text_column_name (str):
-            label_column_name (str):
-            mitigate_each_label_separately (bool, optional):
-            batch_size (int, optional):
+            df_train (:obj:`pandas.DataFrame`): the training dataset to mitigate.
+            tokenizer (:obj:`transformers.AutoTokenizer`): the tokenizer to use for tokenizing the text.
+            protected_attributes_per_label_dict (:obj:dict): a dictionary containing the protected attributes for each label.
+            text_column_name (str): the name of the column containing the text.
+            label_column_name (str): the name of the column containing the labels.
+            mitigation_strategy (str, optional): the mitigation strategy to use. Defaults to "word_removal".
+            mitigate_each_label_separately (bool, optional): whether to mitigate each label separately.
+            batch_size (int, optional): the batch size to use for the mitigation strategy. Defaults to 128.
         """
         moderator = PandasDataFrameModerator()
 
@@ -192,11 +193,11 @@ class MitigationFramework:
     def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu"):
         """ Runs predictions on the corpus of texts on which compute the explanations.
         Args:
-            model (:obj:`transformers.AutoModelForSequenceClassification`):
-            tokenizer (:obj:`transformers.AutoTokenizer`):
-            texts (:obj:List[str]):
-            batch_size (int):
-            device (str, optional):
+            model (:obj:`transformers.AutoModelForSequenceClassification`): the model to use for predictions.
+            tokenizer (:obj:`transformers.AutoTokenizer`): the tokenizer to use for tokenizing the text.
+            texts (:obj:List[str]): the list of texts to predict.
+            batch_size (int): the batch size to use for predictions.
+            device (str, optional): the device to use for predictions. Defaults to "cpu".
         """
         tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
         pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
@@ -211,16 +212,12 @@ class MitigationFramework:
         batch_preds = pipe(texts[-remainder:], **tokenizer_kwargs)
         preds.extend(batch_preds)
 
-
         pred_label_names = [d["label"] for d in preds]
         pred_scores = [d["score"] for d in preds]
 
-        pred_dict = {}
-        pred_dict["text"] = texts
-        pred_dict["pred_label_name"] = pred_label_names
-        pred_dict["pred_label_id"] = [self.label2id[l] for l in pred_label_names]
-        pred_dict["pred_score"] = pred_scores
-        pred_dict["pred_probabilities"] = preds
+        pred_dict = {"text": texts, "pred_label_name": pred_label_names,
+                     "pred_label_id": [self.label2id[l] for l in pred_label_names], "pred_score": pred_scores,
+                     "pred_probabilities": preds}
 
         df = pd.DataFrame(pred_dict)
         df.to_csv(os.path.join(self.output_folder, self.use_case_name, "predictions.csv"))
