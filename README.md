@@ -1,5 +1,9 @@
 # A Framework for Mitigating the use of Protected Attributes by NLP classifiers
 
+This repository contains a **mitigation framework** that aims at reducing the use of **protected attributes** in the predictions of NLP classifiers without sacrificing predictive performance.
+
+It currently supports NLP classifiers trained with the [HuggingFace](https://huggingface.co/) library. 
+
 # Table of Contents
 - [Mitigation Framework](#mitigation-framework)
 - [Setup](#setup)
@@ -12,7 +16,7 @@
 # Mitigation Framework
 ![Screenshot](images/mitigation-framework-architecture.png)
 
-The mitigation framework that takes an unlabelled corpus of documents, an existing NLP classifier and its training dataset as input to produce a mitigated training
+The **mitigation framework** takes an unlabelled corpus of documents, an existing NLP classifier and its training dataset as input to produce a mitigated training
 corpus that significantly reduces the learning that takes place on protected attributes without sacrificing
 classification accuracy. It does so by means of three components: 
 * **Explainer**: detects the most important words used by the classifier to make predictions;
@@ -22,9 +26,16 @@ classification accuracy. It does so by means of three components:
 ## 1) Explainer
 The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
 To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
-The framework currently supports the following XAI techniques:
+
+The framework currently supports the following XAI techniques to compute the words' importance within each sentence (local explanation):
 * Integrated Gradients
 * SHAP(TODO)
+
+To compute the overall importance of each word across the entire corpus (global explanation), the framework produces scores:
+```math
+TODO
+```
+
 
 ## 2) Identifier
 * ChatGPT
