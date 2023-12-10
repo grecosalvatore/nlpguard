@@ -202,6 +202,7 @@ class MitigationFramework:
         tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
         pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
 
+        # TODO - Improve this code using yeld
         preds = []
         iterations = len(texts) // batch_size
         remainder = len(texts) % batch_size

@@ -11,7 +11,9 @@ class Identifier(ABC):
     def __init__(self):
         return
 
+    @abstractmethod
     def annotate_protected_attributes(self, **kwargs):
+        """ Abstract method that annotates the protected attributes. """
         return
 
 
@@ -176,7 +178,7 @@ class ChatGPTIdentifier(Identifier):
                 Please annotate a word to a protected category only if it is strictly related. """}
             ],
             temperature=temperature,
-            max_tokens=150  # Adjust as needed
+            max_tokens=150
         )
 
         return completion.choices[0].message.content

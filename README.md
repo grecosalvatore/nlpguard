@@ -85,7 +85,7 @@ from framework.mitigation_framework import MitigationFramework
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
 
-id2label = {0: "toxic", 1: "non-toxic"}
+id2label = {0: "non-toxic", 1: "toxic"}
 
 model_name_or_path = "your_trained_model_path"
 

@@ -13,8 +13,8 @@ class Explainer(ABC):
 
     @abstractmethod
     def local_explanations(self, **kwargs):
+        """ Abstract method to compute local explanations. """
         return
-
 
     def global_explanations(self, label_ids_to_explain, id2label, explainer_output_folder):
         """ Computes global explanations for a set of class labels.
@@ -65,6 +65,7 @@ class Explainer(ABC):
 
     @staticmethod
     def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##"):
+        # TODO - Improve this code and add more documentation and comments
         """ Computes overall importance scores (global explanations) for each token by aggregating their importance withing individual predictions (local explanations).
         Args:
             df (pd.DataFrame): Dataframe containing local explanations.
@@ -73,6 +74,7 @@ class Explainer(ABC):
         Returns:
             pd.DataFrame: Dataframe containing the global explanations.
         """
+
         df_grp = df.groupby(["tokens"]).sum().reset_index()
 
         df_freq = df.groupby(["tokens"]).size().reset_index(name='freq')
@@ -139,7 +141,6 @@ class IntegratedGradientsExplainer(Explainer):
             end_index = min(i + batch_size, len(list1))
             # Return the current batch
             yield list1[start_index:end_index], list2[start_index:end_index], start_index, end_index
-
 
     def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128):
         """ ."""
@@ -211,8 +212,6 @@ class IntegratedGradientsExplainer(Explainer):
             batch_scores.extend(scores_raw)
             batch_scores_weighted.extend(scores_weighted)
         return batch_tokens, batch_scores, batch_scores_weighted
-
-
 
 
 class ShapExplainer(Explainer):

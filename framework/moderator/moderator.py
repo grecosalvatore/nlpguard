@@ -167,3 +167,15 @@ class HuggingFaceDatasetModerator(Moderator):
     def __init__(self):
         super().__init__()
         return
+
+    def words_removal_mitigation_strategy(self, **kwargs):
+        return
+
+    def sentences_removal_mitigation_strategy(self, **kwargs):
+        return
+
+    def word_replacement_with_synonyms_mitigation_strategy(self, **kwargs):
+        return
+
+    def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
+        return
