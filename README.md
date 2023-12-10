@@ -21,7 +21,7 @@ corpus that significantly reduces the learning that takes place on protected att
 classification accuracy. It does so by means of three components: 
 * **Explainer**: detects the most important words used by the classifier to make predictions;
 * **Identifier**: detects which of these words are protected attributes;
-* **Moderator**: re-trains the classifier to minimize the learning on protected words.
+* **Moderator**: produces a mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
 
 ## 1) Explainer
 The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
@@ -38,11 +38,34 @@ TODO
 
 
 ## 2) Identifier
-* ChatGPT
+The Identifier component determines which of the most important words extracted by the explainer are protected attributes.
+To this end, it annotates each word with one of the following labels:
+* **none-category**: the word is not a protected attribute;
+* **protected-category**: the word is a protected attribute;
+    * **Age**
+    * **Disability**
+    * **Gender reassignment**
+    * **Marriage and civil partnership**
+    * **Pregnancy and maternity**
+    * **Race**
+    * **Religion and belief**
+    * **Sex (Gender)**
+    * **Sexual orientation**
+    
+The framework currently supports the following techniques to annotate protected attributes:
+* ChatGPT annotation: 
+
+**Note**: The ChatGPT annotation requires a openAI API key. You can get one [here](https://beta.openai.com/).
 
 ## 3) Moderator
-* Words Removal
-* Sentences Removal
+The Moderator component mitigates the protected attributes identified by the Identifier component in the training dataset.
+
+The framework currently supports the following mitigation strategies:
+* **MS1** - *Words Removal*: removes the protected attributes identified by the Identifier component from the training dataset;
+* **MS2** - *Sentences Removal*: removes the sentences containing the protected attributes identified by the Identifier component from the training dataset;
+* **MS3** - *Words Replacement with Synonyms*: replaces the protected attributes identified by the Identifier component *k* synonyms from the training dataset; (TODO)
+* **MS4** - *Words Replacement with Hypernym*: replaces the protected attributes identified by the Identifier component with their hypernym from the training dataset; (TODO)
+
 
 # Setup
 1) Create and Start a new environment:
