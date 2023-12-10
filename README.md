@@ -53,7 +53,8 @@ To this end, it annotates each word with one of the following labels:
     * **Sexual orientation**
     
 The framework currently supports the following techniques to annotate protected attributes:
-* ChatGPT annotation: 
+* ChatGPT annotation: it prompts ChatGPT to classify if a word is a protected attribute or not. If the word is a protected attribute, it is also classified into one of the nine categories listed above.
+* Pre-defined list of protected attributes: (TODO)
 
 **Note**: The ChatGPT annotation requires a openAI API key. You can get one [here](https://beta.openai.com/).
 
