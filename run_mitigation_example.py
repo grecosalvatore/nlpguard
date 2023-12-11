@@ -1,5 +1,5 @@
 from framework.mitigation_framework import MitigationFramework
-from transformers import AutoModel, AutoModelForSequenceClassification, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
 import torch
 
