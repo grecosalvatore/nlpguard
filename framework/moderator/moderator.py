@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 import pandas as pd
+import nltk
+from nltk.corpus import wordnet
+
 
 class Moderator(ABC):
     """ Abstract Moderator Class. """
@@ -159,7 +162,32 @@ class PandasDataFrameModerator(Moderator):
         return
 
     def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
+
+        # Download the WordNet corpus
+        nltk.download('wordnet')
+
+
         return
+
+    @staticmethod
+    def _get_hypernyms(word_list):
+        """" Returns the hypernyms of the words in the given list."""
+        hypernyms_dict = {}
+        for word in word_list:
+            print(word)
+            my_syns = [wordnet.synsets(word)[0]]
+            if len(my_syns) > 0:
+                ss_list = []
+                for ss in my_syns:
+                    ss_list.extend(ss.hypernyms())
+                if len(ss_list) > 0:
+                    hypernyms_dict[word] = ss_list[0].name()
+
+        for w, h in hypernonyms_dict.items():
+            tmp_h = h.split(".", 1)[0]
+            tmp_h = tmp_h.replace("_", " ")
+            hypernyms_dict[w] = tmp_h
+        return hypernyms_dict
 
 
 class HuggingFaceDatasetModerator(Moderator):
