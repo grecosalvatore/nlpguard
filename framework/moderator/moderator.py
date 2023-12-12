@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import nltk
 from nltk.corpus import wordnet
-
+import gensim.downloader as api
 
 class Moderator(ABC):
     """ Abstract Moderator Class. """
@@ -159,15 +159,41 @@ class PandasDataFrameModerator(Moderator):
 
     # TODO - Implement the following mitigation strategies for Pandas DataFrames
     def word_replacement_with_synonyms_mitigation_strategy(self, **kwargs):
+        # TODO
+        print("Loading word vectors...")
+        glove_word_embedding = self.load_embedding_model()
+        print("Word vectors loaded.")
+        self._get_synonyms()
+
         return
 
     def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
-
+        # TODO
         # Download the WordNet corpus
         nltk.download('wordnet')
 
-
+        self._get_hypernyms()
         return
+
+    @staticmethod
+    def _get_synonyms(word_list, glove_word_embedding, k=5):
+        """" Returns the synonyms of the words in the given list."""
+        synonyms_dict = {}
+        for word in word_list:
+            if word in glove_word_embedding:
+                k_words_raw = glove_word_embedding.most_similar(word)
+                k_words = [word[0] for word in k_words_raw[:k]]
+                synonyms_dict[word] = k_words
+        return synonyms_dict
+
+    @staticmethod
+    def load_GloVe_embedding_model(model_name="glove-wiki-gigaword-300"):
+        """ Load GloVe Vectors
+            Return:
+                wv_from_bin: All 400000 embeddings, each lengh 200
+        """
+        wv_from_bin = api.load(model_name)
+        return wv_from_bin
 
     @staticmethod
     def _get_hypernyms(word_list):
