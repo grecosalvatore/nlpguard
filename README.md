@@ -8,6 +8,7 @@ It currently supports NLP classifiers trained with the [HuggingFace](https://hug
 - [Mitigation Framework](#mitigation-framework)
 - [Setup](#setup)
 - [Getting Started](#getting-started)
+- [Future Developments](#future-developments)
 - [References](#references)
 - [Future Developments](#future-developments)
 
