@@ -1,4 +1,4 @@
-# Mitigating the use of Protected Attributes by NLP classifiers
+# NLPGuard: Mitigating the use of Protected Attributes by NLP classifiers
 
 This repository contains a **mitigation framework** that aims at reducing the use of **protected attributes** in the predictions of NLP classifiers without sacrificing predictive performance.
 

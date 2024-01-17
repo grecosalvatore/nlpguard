@@ -40,7 +40,7 @@ if __name__ == '__main__':
                                    )
 
     # Identify protected attributes from the 20 most important words extracted by the explainer for each label
-    number_most_important_words = 20
+    number_most_important_words = 400
 
     #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
     df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict,  # Output of the explainer
