@@ -18,7 +18,7 @@ class Identifier(ABC):
 
 
 class ChatGPTIdentifier(Identifier):
-    def __init__(self, openai_api_key="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"):
+    def __init__(self, openai_api_key="INSERT_YOUR_API_KEY"):
         super().__init__()
         openai.api_key = openai_api_key
         return
