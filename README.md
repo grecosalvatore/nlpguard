@@ -33,7 +33,7 @@ classification accuracy.
 NLPGuard comprises three components: 
 * [**Explainer**](#explainer): extracts the most important predictive words used by the classifier to make predictions;
 * [**Identifier**](#identifier): determines which of these words are protected attributes;
-* [**Moderator**](#moderator): modifies the original training dataset to produce a new mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
+* [**Moderator**](#moderator): modifies the original training dataset to produce a new mitigated training dataset to re-train the classifier.
 
 ## Explainer
 The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
