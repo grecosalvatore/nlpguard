@@ -1,41 +1,51 @@
 # NLPGuard: Mitigating the use of Protected Attributes by NLP classifiers
 
-This repository contains a **mitigation framework** that aims at reducing the use of **protected attributes** in the predictions of NLP classifiers without sacrificing predictive performance.
 
-It currently supports NLP classifiers trained with the [HuggingFace](https://huggingface.co/) library. 
+This repository contains the code of the paper: <br>
+[NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
+](https://dl.acm.org/doi/10.1145/3686924) **(Greco et al., 2024)**
+
+
+**NLPGuard** is a **mitigation framework** that aims at reducing the use of **protected attributes** in the predictions of NLP classifiers without sacrificing predictive performance.
+
+It currently supports NLP classifiers trained with the 🤗 [HuggingFace](https://huggingface.co/) library. 
+
+**NOTE:** NLPGuard will be available as a Python package soon
 
 # Table of Contents
-- [Mitigation Framework](#mitigation-framework)
+- [NLPGuard Framework](#nlpguard-framework)
 - [Setup](#setup)
 - [Getting Started](#getting-started)
+- [Examples](#examples)
 - [Future Developments](#future-developments)
 - [References](#references)
 - [Future Developments](#future-developments)
 
 
 
-# Mitigation Framework
+# NLPGuard Framework
 ![Screenshot](images/mitigation-framework-architecture.png)
 
-The **mitigation framework** takes an unlabelled corpus of documents, an existing NLP classifier and its training dataset as input to produce a mitigated training
-corpus that significantly reduces the learning that takes place on protected attributes without sacrificing
-classification accuracy. It does so by means of three components: 
-* **Explainer**: detects the most important words used by the classifier to make predictions;
-* **Identifier**: detects which of these words are protected attributes;
-* **Moderator**: produces a mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
+**NLPGuard** takes an existing NLP classifier, its training dataset, and an unlabeled corpus (e.g., test set or new data) used for predictions as input to produce a mitigated training
+corpus that **significantly reduces the learning that takes place on protected attributes** without sacrificing
+classification accuracy. 
+
+NLPGuard comprises three components: 
+* **Explainer**: extracts the most important predictive words used by the classifier to make predictions;
+* **Identifier**: determines which of these words are protected attributes;
+* **Moderator**: modifies the original training dataset to produce a new mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
 
 ## 1) Explainer
 The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
 To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
 
-The framework currently supports the following XAI techniques to compute the words' importance within each sentence (local explanation):
-* Integrated Gradients
-* SHAP(TODO)
+NLPGuard currently supports the following XAI techniques:
+* Integrated Gradients ✅️
 
-To compute the overall importance of each word across the entire corpus (global explanation), the framework produces scores:
-```math
-TODO
-```
+Other will be added soon:
+* SHAP ⚙
+
+
 
 
 ## 2) Identifier
@@ -53,27 +63,34 @@ To this end, it annotates each word with one of the following labels:
     * **Sex (Gender)**
     * **Sexual orientation**
     
-The framework currently supports the following techniques to annotate protected attributes:
-* ChatGPT annotation: it prompts ChatGPT to classify if a word is a protected attribute or not. If the word is a protected attribute, it is also classified into one of the nine categories listed above.
-* Pre-defined list of protected attributes: (TODO)
+NLPGuard currently supports the following techniques to annotate protected attributes:
+* Machine-in-the-loop (exploiting LLMs annotations)
+  - GPT-based Identifier ✅️
+  - LlaMa-based Identifier ✅️
 
-**Note**: The ChatGPT annotation requires a openAI API key. You can get one [here](https://beta.openai.com/).
+And other techniques will be available soon:
+* Human-in-the-loop (exploiting human crowd workers) ⚙
+* Pre-defined list of protected attributes: ⚙
+
+**Note**: 
+- The GPT-based annotation requires a openAI API key. You can get one [here](https://beta.openai.com/).
+- The LlaMa-based annotation requires a Hugging Face access token (you can get it [here](https://huggingface.co/settings/tokens) and granted access to the specific LlaMa model you want to use ([here](https://huggingface.co/meta-llama))
 
 ## 3) Moderator
 The Moderator component mitigates the protected attributes identified by the Identifier component in the training dataset.
 
-The framework currently supports the following mitigation strategies:
-* **MS1** - *Words Removal*: removes the protected attributes identified by the Identifier component from the training dataset;
-* **MS2** - *Sentences Removal*: removes the sentences containing the protected attributes identified by the Identifier component from the training dataset;
-* **MS3** - *Words Replacement with Synonyms*: replaces the protected attributes identified by the Identifier component *k* synonyms from the training dataset; (TODO)
-* **MS4** - *Words Replacement with Hypernym*: replaces the protected attributes identified by the Identifier component with their hypernym from the training dataset; (TODO)
+NLPGuard currently supports the following mitigation strategies:
+* **MS1** - *Words Removal*: removes the protected attributes identified by the Identifier component from the training dataset ✅
+* **MS2** - *Sentences Removal*: removes the sentences containing the protected attributes identified by the Identifier component from the training dataset ✅
+* **MS3** - *Words Replacement with Synonyms*: replaces the protected attributes identified by the Identifier component *k* synonyms from the training dataset ✅
+* **MS4** - *Words Replacement with Hypernym*: replaces the protected attributes identified by the Identifier component with their hypernym from the training dataset ⚙
 
 
 # Setup
 1) Create and Start a new environment:
 ```sh
-conda create -n protected-attributes-mitigation-env python=3.8 anaconda
-conda activate protected-attributes-mitigation-env
+conda create -n nlpguard-env python=3.8 anaconda
+conda activate nlpguard-env
 ```
 2) Install the required packages:
 ```sh
@@ -146,14 +163,34 @@ df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
 # Save the mitigated dataset to disk
 df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)
 ```
+# Examples 📝
+Full example will be available soon.
 
 # Future Developments
-* Add support for SHAP
-* Add support for other XAI techniques
+- ✅️ Integrate LlaMa annotation of protected attributes for the Identifier component
+- ⚙️ Integrate SHAP for the Explainer component
+- ⚙️ Integrate other XAI techniques for the Explainer component
+- ⚙️ Add mitigation techniques based on data manipulation
 
 # References
 ```bibtex
-
+@article{10.1145/3686924,
+author = {Greco, Salvatore and Zhou, Ke and Capra, Licia and Cerquitelli, Tania and Quercia, Daniele},
+title = {NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers},
+year = {2024},
+issue_date = {November 2024},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {8},
+number = {CSCW2},
+url = {https://doi.org/10.1145/3686924},
+doi = {10.1145/3686924},
+journal = {Proc. ACM Hum.-Comput. Interact.},
+month = nov,
+articleno = {385},
+numpages = {25},
+keywords = {bias, crowdsourcing, fairness, large language models, natural language processing, protected attributes, toxic language}
+}
 ```
 
 # Authors
