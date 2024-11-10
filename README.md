@@ -76,10 +76,10 @@ And other techniques will be available soon:
 The **Moderator** mitigates the protected attributes by modifying the original training dataset that can be used to train a new mitigated classifier.
 
 NLPGuard currently supports the following mitigation strategies:
-* **MS1** - ***Words Removal***: removes the protected attributes identified from the training dataset ✅
-* **MS2** - ***Sentences Removal***: removes the sentences containing the protected attributes identified from the training dataset ✅
-* **MS3** - ***Words Replacement with Synonyms***: replaces the protected attributes identified *k* synonyms from the training dataset ✅
-* **MS4** - ***Words Replacement with Hypernym***: replaces the protected attributes identified with their hypernym from the training dataset ⚙
+- ***Words Removal***: removes the protected attributes identified from the training dataset ✅
+- ***Sentences Removal***: removes the sentences containing the protected attributes identified from the training dataset ✅
+- ***Words Replacement with Synonyms***: replaces the protected attributes identified *k* synonyms from the training dataset ✅
+- ***Words Replacement with Hypernym***: replaces the protected attributes identified with their hypernym from the training dataset ⚙
 
 
 # Setup
@@ -160,7 +160,7 @@ df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
 df_train_mitigated.to_csv("saved_datasets/test_mitigated.csv", index=False)
 ```
 # Examples 📝
-Full example will be available soon.
+Full examples will be available soon.
 
 # Future Developments
 - ✅️ Integrate LlaMa annotation of protected attributes for the Identifier component
@@ -169,6 +169,7 @@ Full example will be available soon.
 - ⚙️ Add mitigation techniques based on data manipulation
 
 # References
+If you use NLPGuard, please cite the following paper:
 ```bibtex
 @article{10.1145/3686924,
 author = {Greco, Salvatore and Zhou, Ke and Capra, Licia and Cerquitelli, Tania and Quercia, Daniele},
