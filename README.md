@@ -1,9 +1,4 @@
-<div align="center">
-  <h1>NLPGuard</h1> 
-<h2>A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
-</h2>
-</div>
-<br/>
+# NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 
 ---
 
