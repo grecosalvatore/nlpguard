@@ -31,11 +31,11 @@ corpus that **significantly reduces the learning that takes place on protected a
 classification accuracy. 
 
 NLPGuard comprises three components: 
-* **Explainer**: extracts the most important predictive words used by the classifier to make predictions;
-* **Identifier**: determines which of these words are protected attributes;
-* **Moderator**: modifies the original training dataset to produce a new mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
+* [**Explainer**](#explainer): extracts the most important predictive words used by the classifier to make predictions;
+* [**Identifier**](#identifier): determines which of these words are protected attributes;
+* [**Moderator**](#moderator): modifies the original training dataset to produce a new mitigated training dataset that can be used to re-train the classifier to minimize the learning on protected words.
 
-## 1) Explainer
+## Explainer
 The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
 To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
 
@@ -48,7 +48,7 @@ Other will be added soon:
 
 
 
-## 2) Identifier
+## Identifier
 The Identifier component determines which of the most important words extracted by the explainer are protected attributes.
 To this end, it annotates each word with one of the following labels:
 * **none-category**: the word is not a protected attribute;
@@ -73,17 +73,17 @@ And other techniques will be available soon:
 * Pre-defined list of protected attributes: ⚙
 
 **Note**: 
-- The GPT-based annotation requires a openAI API key. You can get one [here](https://beta.openai.com/).
-- The LlaMa-based annotation requires a Hugging Face access token (you can get it [here](https://huggingface.co/settings/tokens) and granted access to the specific LlaMa model you want to use ([here](https://huggingface.co/meta-llama))
+- The GPT-based annotation requires a openAI API key (you can get one [here](https://beta.openai.com/))
+- The LlaMa-based annotation requires a Hugging Face access token (you can get it [here](https://huggingface.co/settings/tokens)) and granted access to the specific LlaMa model you want to use ([here](https://huggingface.co/meta-llama))
 
-## 3) Moderator
+## Moderator
 The Moderator component mitigates the protected attributes identified by the Identifier component in the training dataset.
 
 NLPGuard currently supports the following mitigation strategies:
-* **MS1** - *Words Removal*: removes the protected attributes identified by the Identifier component from the training dataset ✅
-* **MS2** - *Sentences Removal*: removes the sentences containing the protected attributes identified by the Identifier component from the training dataset ✅
-* **MS3** - *Words Replacement with Synonyms*: replaces the protected attributes identified by the Identifier component *k* synonyms from the training dataset ✅
-* **MS4** - *Words Replacement with Hypernym*: replaces the protected attributes identified by the Identifier component with their hypernym from the training dataset ⚙
+* **MS1** - ***Words Removal***: removes the protected attributes identified from the training dataset ✅
+* **MS2** - ***Sentences Removal***: removes the sentences containing the protected attributes identified from the training dataset ✅
+* **MS3** - ***Words Replacement with Synonyms***: replaces the protected attributes identified *k* synonyms from the training dataset ✅
+* **MS4** - ***Words Replacement with Hypernym***: replaces the protected attributes identified with their hypernym from the training dataset ⚙
 
 
 # Setup
