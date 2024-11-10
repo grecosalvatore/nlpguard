@@ -1,6 +1,5 @@
 # NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 
----
 
 This repository contains the code of the paper: <br>
 [NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
@@ -37,8 +36,8 @@ NLPGuard comprises three components:
 * [**Moderator**](#moderator): modifies the original training dataset to produce a new mitigated version to re-train the classifier.
 
 ## Explainer
-The explainer component leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
-To this end, it first computes the words' importance within each sentence (local explanation) and then aggregate them across the entire corpus (global explanation).
+The **Explainer** leverages XAI techniques to extract the list of most important words used by the model for predictions on the unlabeled corpus.
+It first computes the words' importance within each prediction (*local explanation*), and then aggregate them across the entire corpus (*global explanation*).
 
 NLPGuard currently supports the following XAI techniques:
 * Integrated Gradients ✅️
@@ -46,12 +45,8 @@ NLPGuard currently supports the following XAI techniques:
 Other will be added soon:
 * SHAP ⚙
 
-
-
-
 ## Identifier
-The Identifier component determines which of the most important words extracted by the explainer are protected attributes.
-To this end, it annotates each word with one of the following labels:
+The **Identifier** determines which of the most important words are related to protected attributes by annotating each word with one of the following labels:
 * **none-category**: the word is not a protected attribute;
 * **protected-category**: the word is a protected attribute;
     * **Age**
@@ -78,7 +73,7 @@ And other techniques will be available soon:
 - The LlaMa-based annotation requires a Hugging Face access token (you can get it [here](https://huggingface.co/settings/tokens)) and granted access to the specific LlaMa model you want to use ([here](https://huggingface.co/meta-llama))
 
 ## Moderator
-The Moderator component mitigates the protected attributes identified by the Identifier component in the training dataset.
+The **Moderator** mitigates the protected attributes by modifying the original training dataset that can be used to train a new mitigated classifier.
 
 NLPGuard currently supports the following mitigation strategies:
 * **MS1** - ***Words Removal***: removes the protected attributes identified from the training dataset ✅
