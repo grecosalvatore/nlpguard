@@ -10,7 +10,7 @@ This repository contains the code of the paper: <br>
 
 It currently supports NLP classifiers trained with the 🤗 [HuggingFace](https://huggingface.co/) library. 
 
-**NOTE:** NLPGuard will be available as a Python package soon
+<u>**NOTE**</u>: NLPGuard will be available as a Python package soon
 
 # Table of Contents
 - [NLPGuard Framework](#nlpguard-framework)
@@ -71,6 +71,8 @@ And other techniques will be available soon:
 **Note**: 
 - The GPT-based annotation requires a openAI API key (you can get one [here](https://beta.openai.com/))
 - The LlaMa-based annotation requires a Hugging Face access token (you can get it [here](https://huggingface.co/settings/tokens)) and granted access to the specific LlaMa model you want to use ([here](https://huggingface.co/meta-llama))
+
+<u>**Warning**</u>: The effectiveness of the LlaMa-based annotation has not been evaluated 
 
 ## Moderator
 The **Moderator** mitigates the protected attributes by modifying the original training dataset that can be used to train a new mitigated classifier.
