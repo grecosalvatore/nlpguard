@@ -14,6 +14,9 @@ It currently supports NLP classifiers trained with the 🤗 [HuggingFace](https:
 
 # Table of Contents
 - [NLPGuard Framework](#nlpguard-framework)
+  - [Explainer](#explainer)
+  - [Identifier](#identifier)
+  - [Moderator](#moderator)
 - [Setup](#setup)
 - [Getting Started](#getting-started)
 - [Examples](#examples)
