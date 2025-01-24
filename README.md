@@ -1,6 +1,8 @@
 # NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 
 
+
+
 This repository contains the code of the paper: <br>
 [NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 ](https://dl.acm.org/doi/10.1145/3686924) **(Greco et al., 2024)**

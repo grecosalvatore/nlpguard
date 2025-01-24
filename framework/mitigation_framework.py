@@ -1,5 +1,5 @@
 from framework.explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
-from framework.identifier.identifier import ChatGPTIdentifier
+from framework.identifier.identifier import ChatGPTIdentifier, LLamaIdentifier
 from framework.moderator.moderator import PandasDataFrameModerator
 from transformers.pipelines import pipeline
 import os
@@ -7,7 +7,7 @@ import time
 import datetime
 from tqdm import tqdm
 import pandas as pd
-
+import torch
 
 class MitigationFramework:
     """ Mitigation Framework class. It is used to run the mitigation framework.
@@ -124,7 +124,7 @@ class MitigationFramework:
 
         return output_dict
 
-    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400):
+    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400, device='cuda' if torch.cuda.is_available() else 'cpu'):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
             output_dict (:obj:dict): Dictionary containing the most important words for each label.
@@ -138,6 +138,16 @@ class MitigationFramework:
             print("Mitigation Framework: Running ChatGPT Identification of Protected Attributes")
             # Instantiating the ChatGPT implementation of the Identifier
             identifier = ChatGPTIdentifier()
+
+            # Annotating the protected attributes with ChatGPT
+            df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)
+        elif identifier_method == "llama":
+            # Extracting distinct words from most important words for each label
+            distinct_words = list(set(word for words_list in output_dict.values() for word in words_list[:number_most_important_words]))
+
+            print("Mitigation Framework: Running LLaMa Identification of Protected Attributes")
+            # Instantiating the ChatGPT implementation of the Identifier
+            identifier = LLamaIdentifier(device=device)
 
             # Annotating the protected attributes with ChatGPT
             df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)
@@ -155,7 +165,8 @@ class MitigationFramework:
             protected_attributes_dict[self.label2id[output_dict_key]] = protected_attributes_current_label
         return df_annotated, protected_attributes, protected_attributes_dict
 
-    def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128):
+    def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128, n_synonyms=5,
+                                                                                 keep_original_sentence=True,):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
         Args:
             df_train (:obj:`pandas.DataFrame`): the training dataset to mitigate.
@@ -183,7 +194,16 @@ class MitigationFramework:
                                                                                  mitigate_each_label_separately, batch_size)
 
         elif mitigation_strategy == "word_replacement_with_synonym":
-            print("Mitigation Framework: Running Word Replacement with Synonyms Mitigation Strategy (TODO)")
+            print("Mitigation Framework: Running Word Replacement with Synonyms Mitigation Strategy")
+            df_train_mitigated = moderator.word_replacement_with_synonyms_mitigation_strategy(df_train,
+                                                                                 tokenizer,
+                                                                                 protected_attributes_per_label_dict,
+                                                                                 text_column_name,
+                                                                                 label_column_name,
+                                                                                 self.id2label,
+                                                                                 n_synonyms,
+                                                                                 keep_original_sentence,
+                                                                                 mitigate_each_label_separately, batch_size)
         elif mitigation_strategy == "word_replacement_with_hypernym":
             print("Mitigation Framework: Running Word Replacement with Hypernyms Mitigation Strategy (TODO)")
         else:

@@ -39,7 +39,7 @@ if __name__ == '__main__':
                                    device=device  # Device to run the explainer on
                                    )
 
-    # Identify protected attributes from the 20 most important words extracted by the explainer for each label
+    # Identify protected attributes from the 400 most important words extracted by the explainer for each label
     number_most_important_words = 400
 
     #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
