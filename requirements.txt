@@ -3,5 +3,3 @@ pandas~=2.1.3
 torch~=2.1.1+cu118
 tqdm~=4.66.1
 transformers~=4.35.2
-sphinx
-sphinx-rtd-theme
