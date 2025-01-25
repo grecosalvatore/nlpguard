@@ -1,4 +1,4 @@
-from framework.mitigation_framework import MitigationFramework
+from nlpguard.nlpguard import NLPGuard
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
 import torch
@@ -13,9 +13,9 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Instantiate the Mitigation Framework
-    mf = MitigationFramework()
-    mf.initialize_mitigation_framework(id2label=id2label,
-                                       use_case_name="nurse_vs_all")
+    NLPGuard_framework = NLPGuard()
+    NLPGuard_framework.initialize_mitigation_framework(id2label=id2label,
+                                                       use_case_name="nurse_vs_all")
 
     model_name_or_path = "saved_models/nurse_vs_all/bert-base-uncased/best_model/"
 
@@ -32,20 +32,20 @@ if __name__ == '__main__':
     label_ids_to_explain = [0, 1]
 
     # Run the explainer. It returns a dictionary with, for each label id, the list of most important words
-    output_dict = mf.run_explainer(model,  # Explained model
-                                   tokenizer, # Model Tokenizer
-                                   texts,  # Unlabeled corpus of texts to explain and extract most important words
-                                   label_ids_to_explain,  # Labels to explain
-                                   device=device  # Device to run the explainer on
-                                   )
+    output_dict = NLPGuard_framework.run_explainer(model,  # Explained model
+                                     tokenizer, # Model Tokenizer
+                                     texts,  # Unlabeled corpus of texts to explain and extract most important words
+                                     label_ids_to_explain,  # Labels to explain
+                                     device=device  # Device to run the explainer on
+                                     )
 
     # Identify protected attributes from the 400 most important words extracted by the explainer for each label
     number_most_important_words = 400
 
     #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
-    df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict,  # Output of the explainer
-                                                                                      number_most_important_words=number_most_important_words  # Number of most important words to consider
-                                                                                      )
+    df_annotated, protected_attributes, protected_attributes_dict = NLPGuard_framework.run_identifier(output_dict,  # Output of the explainer
+                                                                                                      number_most_important_words=number_most_important_words  # Number of most important words to consider
+                                                                                                     )
 
     # Print the protected attributes identified separately for each label
     print(protected_attributes_dict)
@@ -65,15 +65,15 @@ if __name__ == '__main__':
     #mitigation_strategy = "sentence_removal"
 
     # Run the moderator to mitigate the protected attributes identified by the identifier in the training dataset
-    df_train_mitigated = mf.run_moderator(df_train,  # Training dataset to mitigate
-                                          tokenizer,  # Model tokenizer
-                                          protected_attributes_dict,  # Protected attributes identified by the identifier
-                                          mitigation_strategy=mitigation_strategy,  # Mitigation strategy to use
-                                          text_column_name="cleaned_text",  # Name of the column containing the texts
-                                          label_column_name="label",  # Name of the column containing the labels
-                                          mitigate_each_label_separately=mitigate_each_label_separately,  # Mitigate the protected attributes for each label separately or not
-                                          batch_size=128  # Batch size to use for the mitigation
-                                          )
+    df_train_mitigated = NLPGuard_framework.run_moderator(df_train,  # Training dataset to mitigate
+                                                          tokenizer,  # Model tokenizer
+                                                          protected_attributes_dict,  # Protected attributes identified by the identifier
+                                                          mitigation_strategy=mitigation_strategy,  # Mitigation strategy to use
+                                                          text_column_name="cleaned_text",  # Name of the column containing the texts
+                                                          label_column_name="label",  # Name of the column containing the labels
+                                                          mitigate_each_label_separately=mitigate_each_label_separately,  # Mitigate the protected attributes for each label separately or not
+                                                          batch_size=128  # Batch size to use for the mitigation
+                                                          )
 
     print("Mitigated dataset:")
     print(df_train_mitigated.head(30))

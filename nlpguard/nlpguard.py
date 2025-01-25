@@ -1,6 +1,6 @@
-from framework.explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
-from framework.identifier.identifier import ChatGPTIdentifier, LLamaIdentifier
-from framework.moderator.moderator import PandasDataFrameModerator
+from nlpguard.explainer.explainer import IntegratedGradientsExplainer, ShapExplainer
+from nlpguard.identifier.identifier import ChatGPTIdentifier, LLamaIdentifier
+from nlpguard.moderator.moderator import PandasDataFrameModerator
 from transformers.pipelines import pipeline
 import os
 import time
@@ -9,7 +9,7 @@ from tqdm import tqdm
 import pandas as pd
 import torch
 
-class MitigationFramework:
+class NLPGuard:
     """ Mitigation Framework class. It is used to run the mitigation framework.
     It is composed of three main components: Explainer, Identifier and Moderator.
     The Explainer is used to extract the most important words from a corpus of texts.
