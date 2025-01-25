@@ -1,6 +1,9 @@
 # NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 
 
+[![Documentation Status](https://readthedocs.org/projects/nlpguard/badge/?version=latest)](https://nlpguard.readthedocs.io/en/latest/)
+[![License](https://img.shields.io/github/license/grecosalvatore/nlpguard)](https://github.com/grecosalvatore/nlpguard/blob/main/LICENSE)
+[![ACM Badge](https://img.shields.io/badge/ACM-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/10.1145/3686924)
 
 
 This repository contains the code of the paper: <br>
