@@ -10,7 +10,10 @@ Welcome to NLPGuard's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   introduction
+   citation
+   installation
+   examples
 
 Indices and tables
 ==================
