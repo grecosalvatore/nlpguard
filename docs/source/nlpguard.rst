@@ -42,6 +42,7 @@ Moderator
 ==========
 
 The **Moderator** component modifies the original training dataset to produce a new mitigated version to re-train a new mitigated classifier with lower reliance on protected attributes.
+
 .. automodule:: nlpguard.moderator.moderator
    :members:
    :undoc-members:
