@@ -19,7 +19,7 @@ This document provides an overview of these components and how they work togethe
 Explainer
 ==========
 
-The **Explainer** component of NLPGuard is responsible for explaining how different tokens are categorized into protected attributes. This module is useful when you need to understand why a certain token was classified under a particular protected attribute.
+The **Explainer** component extracts the most important predictive words used by the classifier to make predictions.
 
 .. automodule:: nlpguard.explainer.explainer
    :members:
@@ -30,7 +30,7 @@ The **Explainer** component of NLPGuard is responsible for explaining how differ
 Identifier
 ==========
 
-The **Identifier** component focuses on identifying tokens in a text as protected attributes using various models, such as ChatGPT or LLama. It provides methods for annotating tokens with labels, such as "Age", "Disability", etc.
+The **Identifier** component determines which of the words extracted by the **Explainer** are protected attributes.
 
 .. automodule:: nlpguard.identifier.identifier
    :members:
@@ -41,8 +41,7 @@ The **Identifier** component focuses on identifying tokens in a text as protecte
 Moderator
 ==========
 
-The **Moderator** component works in conjunction with the Explainer and Identifier modules to moderate and ensure that identified protected attributes are not used inappropriately within automated decision-making systems.
-
+The **Moderator** component modifies the original training dataset to produce a new mitigated version to re-train a new mitigated classifier with lower reliance on protected attributes.
 .. automodule:: nlpguard.moderator.moderator
    :members:
    :undoc-members:
