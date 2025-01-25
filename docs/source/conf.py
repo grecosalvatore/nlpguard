@@ -14,7 +14,16 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    'sphinx.ext.autodoc',  # Enables automatic documentation
+    'sphinx_autodoc_typehints'  # Adds type hint documentation support
+]
+
+autodoc_default_options = {
+    'members': True,  # Include members of classes and functions
+    'undoc-members': True,  # Include members without docstrings
+    'private-members': True,  # Include private members
+}
 
 templates_path = ['_templates']
 exclude_patterns = []
