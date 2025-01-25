@@ -47,4 +47,3 @@ The **Moderator** component works in conjunction with the Explainer and Identifi
    :members:
    :undoc-members:
    :show-inheritance:
-

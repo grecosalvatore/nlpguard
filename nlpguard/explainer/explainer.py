@@ -57,6 +57,7 @@ class Explainer(ABC):
         Returns:
             pd.DataFrame: Dataframe containing the local explanations.
         """
+
         df_list = []
 
         for path in os.listdir(dir_path):
@@ -81,12 +82,13 @@ class Explainer(ABC):
 
     @staticmethod
     def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##"):
-        # TODO - Improve this code and add more documentation and comments
         """ Computes overall importance scores (global explanations) for each token by aggregating their importance withing individual predictions (local explanations).
+
         Args:
             df (pd.DataFrame): Dataframe containing local explanations.
             minimum_frequency (int, optional): Minimum frequency of a token to be considered in the global explanations. Defaults to 2.
             subtoken_separator (str, optional): Subtoken separator used by the tokenizer. Defaults to "##".
+
         Returns:
             pd.DataFrame: Dataframe containing the global explanations.
         """
@@ -125,7 +127,9 @@ class Explainer(ABC):
 
 
 class IntegratedGradientsExplainer(Explainer):
-    """ Integrated Gradients implementation of the Explainer abstract class. """
+    """ Integrated Gradients implementation of the Explainer abstract class.
+
+    """
     def __init__(self, model, tokenizer, device="cpu"):
         super().__init__()
         self.model = model
