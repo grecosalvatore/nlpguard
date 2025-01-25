@@ -17,6 +17,7 @@ class Identifier(ABC):
     @abstractmethod
     def annotate_protected_attributes(self, **kwargs):
         """ Abstract method that annotates the protected attributes. """
+
         return
 
 
@@ -28,6 +29,7 @@ class ChatGPTIdentifier(Identifier):
 
     def annotate_protected_attributes(self, tokens, temperature=0.3):
         """  ."""
+
         result = []
         raw_responses = []
         exception_logs = []
@@ -92,9 +94,11 @@ class ChatGPTIdentifier(Identifier):
 
     def _clean_chatgpt_responses(self, df_raw,  protected_category_column_name="chatgpt_protected_category"):
         """ Cleans the chatgpt response.
+
         Args:
             df (pd.DataFrame): The dataframe containing the chatgpt response.
         """
+
         df = df_raw.copy()
         df["word"] = df["word"].str.lower()
         df["word"] = df["word"].str.strip()
@@ -142,11 +146,13 @@ class ChatGPTIdentifier(Identifier):
     @staticmethod
     def _chatgpt_annotate(tk, temperature=0.3, chatgpt_model="gpt-3.5-turbo"):
         """ Performs annotation using ChatGPT of the input token.
+
         Args:
             tk (str): The token to be annotated.
             temperature (float): The temperature of the ChatGPT model.
             chatgpt_model (str): The ChatGPT model to be used.
         """
+
         completion = openai.chat.completions.create(
             model=chatgpt_model,
             messages=[
@@ -196,6 +202,7 @@ class LLamaIdentifier(Identifier):
             hf_endpoint (str): The endpoint of the model on Hugging Face Inference API.
             hf_token (str): The Hugging Face API token for authentication.
         """
+
         super().__init__()
         self.hf_endpoint = hf_endpoint
         self.hf_headers = {
@@ -205,6 +212,7 @@ class LLamaIdentifier(Identifier):
 
     def annotate_protected_attributes(self, tokens, temperature=0.3):
         """Annotates tokens with protected attributes using LLaMA-based model."""
+
         results = []
         raw_responses = []
         exception_logs = []
@@ -242,6 +250,7 @@ class LLamaIdentifier(Identifier):
 
     def _llama_annotate(self, tk, temperature=0.3, prompt_template=None):
         """Generates annotation for a token using the Hugging Face Inference API."""
+
         if prompt_template is None:
             prompt_template = (
                 f"""Consider these 9 protected categories defined by the Equality Act law to avoid discrimination of automatic decision-making algorithms:
@@ -272,6 +281,7 @@ class LLamaIdentifier(Identifier):
 
     def _clean_llama_responses(self, df_raw, protected_category_column_name="llama_protected_category"):
         """Cleans and standardizes the responses for analysis."""
+
         df = df_raw.copy()
         df["word"] = df["word"].str.lower().str.strip()
         df[protected_category_column_name] = df[protected_category_column_name].str.lower().str.strip()
