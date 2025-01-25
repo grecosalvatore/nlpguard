@@ -6,3 +6,4 @@ pandas
 ferret-xai
 nltk
 openai
+gensim
