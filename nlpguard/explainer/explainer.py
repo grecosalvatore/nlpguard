@@ -6,6 +6,7 @@ import pandas as pd
 import os
 import torch
 
+
 class Explainer(ABC):
     """ Abstract Explainer Class. """
     def __init__(self):
@@ -30,20 +31,27 @@ class Explainer(ABC):
 
         for label_id in label_ids_to_explain:
             label_name = id2label[label_id]
-            df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
-            df_current_global = self._compute_global_scores(df_current)
-            df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_scores_{label_name}.csv"))
-            print(f"\nGlobal Explanations for label: {label_name}")
-            print(df_current_global)
-            print("\n")
 
-            output_dict[label_name] = df_current_global["tokens"].tolist()
+            # Check if the directory contains at least one CSV file
+            csv_files = [file for file in os.listdir(os.path.join(explainer_output_folder, "local_explanations", label_name)) if file.endswith(".csv")]
+            if not csv_files:
+                print(f"\nGlobal Explanations for label: Local explanations not found for label {label_name}. Skipping...")
+                output_dict[label_name] = []
+            else:
+                df_current = self._load_local_explanations(os.path.join(explainer_output_folder, "local_explanations", label_name))
+                df_current_global = self._compute_global_scores(df_current)
+                df_current_global.to_csv(os.path.join(explainer_output_folder, "global_explanations", f"global_scores_{label_name}.csv"))
+                print(f"\nGlobal Explanations for label: {label_name}")
+                print(df_current_global)
+                print("\n")
+
+                output_dict[label_name] = df_current_global["tokens"].tolist()
 
         return output_dict
 
     @staticmethod
     def _load_local_explanations(dir_path):
-        """ Loads local explanations from a directory.
+        """Loads local explanations from a directory.
         Args:
             dir_path (str): Path to the directory containing the local explanations.
         Returns:
@@ -52,15 +60,23 @@ class Explainer(ABC):
         df_list = []
 
         for path in os.listdir(dir_path):
-            current_path = dir_path + "/" + path
+            current_path = os.path.join(dir_path, path)
             if current_path.endswith(".csv"):
-                df_tmp = pd.read_csv(dir_path + "/" + path)
+                df_tmp = pd.read_csv(current_path)
                 df_list.append(df_tmp)
 
-        df = pd.concat(df_list)
+        if not df_list:
+            raise ValueError(f"No CSV files found in directory: {dir_path}")
+
+        if len(df_list) == 1:
+            df = df_list[0]
+        else:
+            df = pd.concat(df_list, ignore_index=True)
+
         df["tokens"] = df["tokens"].astype(str)
         df["tokens"] = df["tokens"].apply(lambda x: x.replace(" ", ""))
         df["tokens"] = df["tokens"].apply(lambda x: x.lower())
+
         return df
 
     @staticmethod

@@ -10,7 +10,7 @@ import pandas as pd
 import torch
 
 class NLPGuard:
-    """ Mitigation Framework class. It is used to run the mitigation framework.
+    """ NLPGuard Framework class. It is used to run the mitigation framework.
     It is composed of three main components: Explainer, Identifier and Moderator.
     The Explainer is used to extract the most important words from a corpus of texts.
     The Identifier is used to identify the protected attributes from the most important words extracted by the explainer.
@@ -51,9 +51,9 @@ class NLPGuard:
 
         # Create the output folder if it does not exist.
         if not os.path.exists(output_folder):
-            print("Mitigation Framework: Warning, output folder does not exist.")
+            print("NLPGuard: Warning, output folder does not exist.")
             os.mkdir(output_folder)
-            print("Mitigation Framework: Output folder created.")
+            print("NLPGuard: Output folder created.")
 
         # Init use case folder. If use_case_name is not specified, the dafault is the current timestamp.
         if use_case_name is None:
@@ -62,7 +62,7 @@ class NLPGuard:
             use_case_name = timestamp
         else:
             if os.path.exists(os.path.join(output_folder, use_case_name)):
-                print("Mitigation Framework: Warning, specified use_case_name already exists in output folder.")
+                print("NLPGuard: Warning, specified use_case_name already exists in output folder.")
                 ts = time.time()
                 timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S')
                 use_case_name = use_case_name + "_" + timestamp
@@ -84,7 +84,7 @@ class NLPGuard:
         moderator_output_folder = os.path.join(use_case_folder_path, "moderator_outputs")
         os.mkdir(moderator_output_folder)
 
-        print(f"Mitigation Framework: Initialized output folder - {use_case_folder_path}.")
+        print(f"NLPGuard: Initialized output folder - {use_case_folder_path}.")
         return output_folder, use_case_name, explainer_output_folder, identifier_output_folder, moderator_output_folder
 
     def run_full_mitigation_pipeline(self, use_case_name=None, output_folder=None):
@@ -103,28 +103,28 @@ class NLPGuard:
         """
 
         if explainer_method == "integrated-gradients":
-            print("Mitigation Framework: Instantiated Integrated Gradients Explainer")
+            print("NLPGuard (Explainer): Instantiated Integrated Gradients Explainer")
             explainer = IntegratedGradientsExplainer(model, tokenizer, device)
         elif explainer_method == "shap":
-            print("Mitigation Framework: Instantiated SHAP Explainer")
+            print("NLPGuard (Explainer): Instantiated SHAP Explainer")
             explainer = ShapExplainer(model, tokenizer, device)
         else:
-            print("Mitigation Framework: Unknown Explainer method. Please select ....")
+            print("NLPGuard (Explainer): Unknown Explainer method. Please select ....")
 
         # Predict labels from texts
-        print("Mitigation Framework: Running Predictions")
+        print("NLPGuard (Explainer): Running Predictions")
         df_predictions = self.run_predictions(model, tokenizer, texts, batch_size, device)
 
-        print("Mitigation Framework: Running Local Explanations")
+        print("NLPGuard (Explainer): Running Local Explanations")
         local_explanations_folder = os.path.join(self.explainer_output_folder, "local_explanations")
         explainer.local_explanations(df_predictions, local_explanations_folder, label_ids_to_explain, self.id2label, batch_size)
 
-        print("Mitigation Framework: Running Global Explanations")
+        print("NLPGuard (Explainer): Running Global Explanations")
         output_dict = explainer.global_explanations(label_ids_to_explain, self.id2label, self.explainer_output_folder)
 
         return output_dict
 
-    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400, device='cuda' if torch.cuda.is_available() else 'cpu'):
+    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400, hf_token="", device='cuda' if torch.cuda.is_available() else 'cpu'):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
             output_dict (:obj:dict): Dictionary containing the most important words for each label.
@@ -135,7 +135,7 @@ class NLPGuard:
             # Extracting distinct words from most important words for each label
             distinct_words = list(set(word for words_list in output_dict.values() for word in words_list[:number_most_important_words]))
 
-            print("Mitigation Framework: Running ChatGPT Identification of Protected Attributes")
+            print("NLPGuard (Identifier): Running ChatGPT Identification of Protected Attributes")
             # Instantiating the ChatGPT implementation of the Identifier
             identifier = ChatGPTIdentifier()
 
@@ -145,20 +145,20 @@ class NLPGuard:
             # Extracting distinct words from most important words for each label
             distinct_words = list(set(word for words_list in output_dict.values() for word in words_list[:number_most_important_words]))
 
-            print("Mitigation Framework: Running LLaMa Identification of Protected Attributes")
+            print("NLPGuard (Identifier): Running LLaMa Identification of Protected Attributes")
             # Instantiating the ChatGPT implementation of the Identifier
-            identifier = LLamaIdentifier(device=device)
+            identifier = LLamaIdentifier(device=device, hf_token=hf_token)
 
             # Annotating the protected attributes with ChatGPT
             df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)
         elif identifier_method == "mturk":
-            print("Mitigation Framework: Running MTurk Identification of Protected Attributes")
+            print("NLPGuard (Identifier): Running MTurk Identification of Protected Attributes")
         else:
             print("Unknown Identifier method")
 
         protected_attributes_dict = {}
         # Printing the protected attributes for each label
-        print("Identifier - Protected Attributes per Label:")
+        print("NLPGuard (Identifier): Protected Attributes per Label:")
         for output_dict_key in output_dict.keys():
             protected_attributes_current_label = [word for word in output_dict[output_dict_key] if word in protected_attributes]
             print(f"Label {output_dict_key} - Protected Attributes: {protected_attributes_current_label}")
@@ -181,10 +181,10 @@ class NLPGuard:
         moderator = PandasDataFrameModerator()
 
         if mitigation_strategy == "word_removal":
-            print("Mitigation Framework: Running Word Removal Mitigation Strategy")
+            print("NLPGuard (Moderator): Running Word Removal Mitigation Strategy")
             df_train_mitigated = moderator.words_removal_mitigation_strategy(df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, self.id2label, mitigate_each_label_separately, batch_size)
         elif mitigation_strategy == "sentence_removal":
-            print("Mitigation Framework: Running Sentence Removal Mitigation Strategy")
+            print("NLPGuard (Moderator): Running Sentence Removal Mitigation Strategy")
             df_train_mitigated = moderator.sentences_removal_mitigation_strategy(df_train,
                                                                                  tokenizer,
                                                                                  protected_attributes_per_label_dict,
@@ -194,7 +194,7 @@ class NLPGuard:
                                                                                  mitigate_each_label_separately, batch_size)
 
         elif mitigation_strategy == "word_replacement_with_synonym":
-            print("Mitigation Framework: Running Word Replacement with Synonyms Mitigation Strategy")
+            print("NLPGuard (Moderator): Running Word Replacement with Synonyms Mitigation Strategy")
             df_train_mitigated = moderator.word_replacement_with_synonyms_mitigation_strategy(df_train,
                                                                                  tokenizer,
                                                                                  protected_attributes_per_label_dict,
@@ -205,9 +205,9 @@ class NLPGuard:
                                                                                  keep_original_sentence,
                                                                                  mitigate_each_label_separately, batch_size)
         elif mitigation_strategy == "word_replacement_with_hypernym":
-            print("Mitigation Framework: Running Word Replacement with Hypernyms Mitigation Strategy (TODO)")
+            print("NLPGuard (Moderator): Running Word Replacement with Hypernyms Mitigation Strategy (TODO)")
         else:
-            print("Mitigation Framework: Unknown Mitigation Strategy. Please select ....")
+            print("NLPGuard (Moderator): Unknown Mitigation Strategy. Please select ....")
         return df_train_mitigated
 
     def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu"):

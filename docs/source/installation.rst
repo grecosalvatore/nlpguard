@@ -1,7 +1,7 @@
 Installation
 ============
 
-NLPGuard is available on PyPI and can be installed with pip for Python >= 3. This guide will walk you through the installation process.
+NLPGuard is available on PyPI and can be installed with pip for Python >= 3.9. This guide will walk you through the installation process.
 
 System Requirements
 -------------------
@@ -57,7 +57,7 @@ Troubleshooting
 
 If you encounter any issues during installation, consider the following troubleshooting steps:
 
-- **Check Python and pip Versions**: Ensure that you are using Python 3.8 or higher and that pip is up to date.
+- **Check Python and pip Versions**: Ensure that you are using Python 3.9 or higher and that pip is up to date.
 - **GitHub Installation Issues**: If you encounter issues installing from GitHub, ensure you have a stable internet connection and that Git is installed on your system.
 - **Error Messages**: Review any error messages in the terminal, as they often provide clues about what went wrong.
 - **Consult the Community**: Visit the `NLPGuard GitHub Issues page <https://github.com/grecosalvatore/nlpguard/issues>`_ for solutions to common problems or to report a new issue.
