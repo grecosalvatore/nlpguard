@@ -6,20 +6,20 @@ NLPGuard is available on PyPI and can be installed with pip for Python >= 3. Thi
 System Requirements
 -------------------
 
-Before installing DriftLens, ensure that you have:
+Before installing NLPGuard, ensure that you have:
 
 - Python 3.9 or higher
 - pip (Python package installer) installed on your system
 
-Installing DriftLens
+Installing NLPGuard
 --------------------
 
-There are two primary ways to install DriftLens:
+There are two primary ways to install NLPGuard:
 
 1. Installation via PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To install the latest stable version of DriftLens from PyPI, use the following command:
+To install the latest stable version of NLPGuard from PyPI, use the following command:
 
 .. code-block:: bash
 
