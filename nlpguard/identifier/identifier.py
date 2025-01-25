@@ -1,4 +1,3 @@
-
 from abc import ABC, abstractmethod
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
 from tqdm import tqdm
@@ -7,6 +6,8 @@ import time
 import datetime
 import openai
 import torch
+import requests
+
 
 class Identifier(ABC):
     """ Abstract Moderator Class. """
@@ -187,18 +188,28 @@ class ChatGPTIdentifier(Identifier):
 
 
 class LLamaIdentifier(Identifier):
-    def __init__(self, model_name="meta-llama/Meta-Llama-3-8B-Instruct", hf_token="",  device='cuda' if torch.cuda.is_available() else 'cpu'):
+    def __init__(self, hf_endpoint, hf_token):
+        """
+        Initializes the LLamaIdentifier using the Hugging Face Inference API.
+
+        Args:
+            hf_endpoint (str): The endpoint of the model on Hugging Face Inference API.
+            hf_token (str): The Hugging Face API token for authentication.
+        """
         super().__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=hf_token)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=hf_token).to(device)
-        self.device = device
+        self.hf_endpoint = hf_endpoint
+        self.hf_headers = {
+            "Authorization": f"Bearer {hf_token}",
+            "Content-Type": "application/json",
+        }
 
     def annotate_protected_attributes(self, tokens, temperature=0.3):
-        """ Annotates tokens with protected attributes using LLaMA-based model """
+        """Annotates tokens with protected attributes using LLaMA-based model."""
         results = []
         raw_responses = []
         exception_logs = []
 
+        print(f"NLPGuard (Identifier): Annotating tokens with protected attributes using {self.hf_endpoint.split('/')[-1]} model")
         for tk in tqdm(tokens):
             try:
                 llama_response = self._llama_annotate(tk, temperature)
@@ -230,7 +241,7 @@ class LLamaIdentifier(Identifier):
         return result, protected_attributes
 
     def _llama_annotate(self, tk, temperature=0.3, prompt_template=None):
-        """ Generates annotation for a token using LLaMA """
+        """Generates annotation for a token using the Hugging Face Inference API."""
         if prompt_template is None:
             prompt_template = (
                 f"""Consider these 9 protected categories defined by the Equality Act law to avoid discrimination of automatic decision-making algorithms:
@@ -241,24 +252,26 @@ class LLamaIdentifier(Identifier):
                 "Pregnancy and maternity": Pregnancy is the condition of being pregnant or expecting a baby. Maternity refers to the period after the birth, and is linked to maternity leave in the employment context. In the non-work context, protection against maternity discrimination is for 26 weeks after giving birth, and this includes treating a woman unfavourably because she is breastfeeding.
                 "Race": Refers to the protected characteristic of race. It refers to a group of people defined by their race, colour, and nationality (including citizenship) ethnic or national origins.
                 "Religion and belief": Religion refers to any religion, including a lack of religion. Belief refers to any religious or philosophical belief and includes a lack of belief. Generally, a belief should affect your life choices or the way you live for it to be included in the definition.
-                "Sex": A word that explicitly refers to the gender of a person: e.g., man or woman, she or he, mr or mrs, male of female, madame etc.
+                "Sex": A word that explicitly refers to the gender of a person: e.g., man or woman, she or he, mr or mrs, male or female, madame etc.
                 "Sexual orientation": Whether a person's sexual attraction is towards their own sex, the opposite sex or to both sexes.
                 .\n"""
                 f"Classify the word '{tk}' into one of these nine categories or None if it does not belong to any, provide a Reliability Score 0-100, and an explanation for your annotation. "
-                f"Provide in format: Protected Category|Reliability Score 0-100|Explanation.")
+                f"Provide in format: Protected Category|Reliability Score 0-100|Explanation."
+            )
 
-        # Encode prompt and generate response
-        inputs = self.tokenizer(prompt_template, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(
-            **inputs, max_length=150, temperature=temperature, do_sample=True
-        )
+        payload = {
+            "inputs": prompt_template,
+            "parameters": {"temperature": temperature, "max_length": 150},
+        }
+        response = requests.post(self.hf_endpoint, headers=self.hf_headers, json=payload)
 
-        # Decode and return the generated response text
-        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return response
+        if response.status_code == 200:
+            return response.json()["generated_text"]
+        else:
+            raise Exception(f"Failed to query Hugging Face API: {response.text}")
 
     def _clean_llama_responses(self, df_raw, protected_category_column_name="llama_protected_category"):
-        """ Cleans and standardizes the responses for analysis. """
+        """Cleans and standardizes the responses for analysis."""
         df = df_raw.copy()
         df["word"] = df["word"].str.lower().str.strip()
         df[protected_category_column_name] = df[protected_category_column_name].str.lower().str.strip()
@@ -291,4 +304,3 @@ class LLamaIdentifier(Identifier):
         result = grouped[['word', 'count_pa', 'count_non_pa', 'count_tot']]
         acc_list = result.to_dict('records')
         return result, acc_list
-

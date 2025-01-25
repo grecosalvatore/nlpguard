@@ -124,7 +124,9 @@ class NLPGuard:
 
         return output_dict
 
-    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400, hf_token="", device='cuda' if torch.cuda.is_available() else 'cpu'):
+    def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400,
+                       hf_token="", hf_endpoint="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct",
+                       device='cuda' if torch.cuda.is_available() else 'cpu'):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
         Args:
             output_dict (:obj:dict): Dictionary containing the most important words for each label.
@@ -147,7 +149,7 @@ class NLPGuard:
 
             print("NLPGuard (Identifier): Running LLaMa Identification of Protected Attributes")
             # Instantiating the ChatGPT implementation of the Identifier
-            identifier = LLamaIdentifier(device=device, hf_token=hf_token)
+            identifier = LLamaIdentifier(hf_endpoint=hf_endpoint, hf_token=hf_token)
 
             # Annotating the protected attributes with ChatGPT
             df_annotated, protected_attributes = identifier.annotate_protected_attributes(distinct_words)

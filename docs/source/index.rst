@@ -13,6 +13,7 @@ Welcome to NLPGuard's documentation!
    introduction
    citation
    installation
+   nlpguard
    examples
 
 Indices and tables
