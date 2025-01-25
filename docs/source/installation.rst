@@ -43,7 +43,7 @@ After installing NLPGuard, you can verify the installation by checking the versi
 
     python -m nlpguard --version
 
-Uninstalling DriftLens
+Uninstalling NLPGuard
 ----------------------
 
 If you need to uninstall NLPGuard, use the following command:
