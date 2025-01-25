@@ -19,10 +19,12 @@ class Explainer(ABC):
 
     def global_explanations(self, label_ids_to_explain, id2label, explainer_output_folder):
         """ Computes global explanations for a set of class labels.
+
         Args:
             label_ids_to_explain (list): List of class label ids to explain.
             id2label
             explainer_output_folder (str): Path to the folder containing the local explanations.
+
         Returns:
             dict: Dictionary containing the global explanations for each class label.
         """
@@ -51,7 +53,8 @@ class Explainer(ABC):
 
     @staticmethod
     def _load_local_explanations(dir_path):
-        """Loads local explanations from a directory.
+        """ Loads local explanations from a directory.
+
         Args:
             dir_path (str): Path to the directory containing the local explanations.
         Returns:
@@ -144,6 +147,7 @@ class IntegratedGradientsExplainer(Explainer):
     @staticmethod
     def batch_iterator(list1, list2, batch_size):
         """ Iterates two list by batch_size.
+
         Args:
             list1 (list): First list.
             list2 (list): Second list.
@@ -151,6 +155,7 @@ class IntegratedGradientsExplainer(Explainer):
         Yields:
             tuple: Tuple containing the current batch of list1, list2, start_index and end_index.
         """
+
         # Ensure both input lists have the same length
         if len(list1) != len(list2):
             raise ValueError("Input lists must have the same length")
@@ -164,6 +169,7 @@ class IntegratedGradientsExplainer(Explainer):
 
     def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128):
         """ ."""
+
         log_errors = []
         log_filepath = os.path.join(local_explanations_folder, "log_file.txt")
 
@@ -207,6 +213,7 @@ class IntegratedGradientsExplainer(Explainer):
 
     def _compute_batch_local_explanations(self, label_id, batch_texts, batch_pred_scores):
         """ ."""
+
         batch_tokens = []
         batch_scores = []
         batch_scores_weighted = []
@@ -235,7 +242,6 @@ class IntegratedGradientsExplainer(Explainer):
 
 
 class ShapExplainer(Explainer):
-    # TODO: Implement ShapExplainer
     def local_explanations(self):
         return
 

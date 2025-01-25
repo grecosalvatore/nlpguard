@@ -14,21 +14,25 @@ class Moderator(ABC):
     @abstractmethod
     def words_removal_mitigation_strategy(self, **kwargs):
         """ Abstract method to perform the word removal mitigation strategy. """
+
         return
 
     @abstractmethod
     def sentences_removal_mitigation_strategy(self, **kwargs):
         """ Abstract method to perform the sentence removal mitigation strategy. """
+
         return
 
     @abstractmethod
     def word_replacement_with_synonyms_mitigation_strategy(self, **kwargs):
         """ Abstract method to perform the word replacement with synonyms mitigation strategy. """
+
         return
 
     @abstractmethod
     def word_replacement_with_hypernym_mitigation_strategy(self, **kwargs):
         """ Abstract method to perform the word replacement with hypernym mitigation strategy. """
+
         return
 
 
@@ -40,6 +44,7 @@ class PandasDataFrameModerator(Moderator):
 
     def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
         """ Performs the word removal mitigation strategy.
+
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
@@ -50,6 +55,7 @@ class PandasDataFrameModerator(Moderator):
             mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
             batch_size (int, optional): Batch size.
         """
+
         if mitigate_each_label_separately == False:
             # Remove words related to protected attributes from all labels
             distinct_protected_attributes = list(set(word for words_list in protected_attributes_per_label_dict.values() for word in words_list))
@@ -71,11 +77,13 @@ class PandasDataFrameModerator(Moderator):
     @staticmethod
     def _batch_words_removal(texts, tokenizer, protected_attributes):
         """ Removes words from texts in batch.
+
         Args:
             texts (:obj:`list` of :obj:`str`): List of texts.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
             protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
         """
+
         # Tokenize the texts in batch
         encoded_inputs = tokenizer(texts.tolist(), add_special_tokens=False, return_tensors='pt', padding=True)
 
@@ -99,11 +107,13 @@ class PandasDataFrameModerator(Moderator):
     @staticmethod
     def _batch_sentences_removal(texts, tokenizer, protected_attributes):
         """ Removes sentences from texts in batch.
+
         Args:
             texts (:obj:`list` of :obj:`str`): List of texts.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
             protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
         """
+
         # Tokenize the texts in batch
         encoded_inputs = tokenizer(texts.tolist(), add_special_tokens=False, return_tensors='pt', padding=True)
 
@@ -133,6 +143,7 @@ class PandasDataFrameModerator(Moderator):
 
     def sentences_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
         """ Performs the sentence removal mitigation strategy.
+
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
@@ -141,6 +152,7 @@ class PandasDataFrameModerator(Moderator):
             label_column_name (str): Name of the column containing the class label.
             mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
         """
+
         if mitigate_each_label_separately == False:
             # Remove sentences related to protected attributes from all labels
             distinct_protected_attributes = list(set(word for words_list in protected_attributes_per_label_dict.values() for word in words_list))
@@ -181,6 +193,7 @@ class PandasDataFrameModerator(Moderator):
         Returns:
             pd.DataFrame: Dataframe with a new column containing synonym-replaced sentences.
         """
+
         glove_word_embedding = self.load_GloVe_embedding_model()
 
         if mitigate_each_label_separately:
@@ -224,6 +237,7 @@ class PandasDataFrameModerator(Moderator):
         Returns:
             list: List of lists with synonym-replaced sentences for each original sentence.
         """
+
         synonym_sentences = []
 
         # Generate synonyms for the entire batch of protected words once
@@ -286,6 +300,7 @@ class PandasDataFrameModerator(Moderator):
         Returns:
             dict: Dictionary of words and their corresponding synonyms.
         """
+
         synonyms_dict = {}
         for word in word_list:
             if word in glove_word_embedding:
@@ -305,11 +320,13 @@ class PandasDataFrameModerator(Moderator):
         Returns:
             gensim.models.KeyedVectors: Loaded GloVe embeddings.
         """
+
         return api.load(model_name)
 
     @staticmethod
     def _get_hypernyms(word_list):
-        """" Returns the hypernyms of the words in the given list."""
+        """" Returns the hypernyms of the words in the given list. """
+
         hypernyms_dict = {}
         for word in word_list:
             print(word)
@@ -321,7 +338,7 @@ class PandasDataFrameModerator(Moderator):
                 if len(ss_list) > 0:
                     hypernyms_dict[word] = ss_list[0].name()
 
-        for w, h in hypernonyms_dict.items():
+        for w, h in hypernyms_dict.items():
             tmp_h = h.split(".", 1)[0]
             tmp_h = tmp_h.replace("_", " ")
             hypernyms_dict[w] = tmp_h
