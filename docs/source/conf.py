@@ -21,7 +21,7 @@ release = '0.1'
 
 extensions = [
     'sphinx.ext.autodoc',  # Enables automatic documentation
-    'sphinx_autodoc_typehints'  # Adds type hint documentation support
+    'sphinx.ext.napoleon'  # Adds type hint documentation support
 ]
 
 autodoc_default_options = {

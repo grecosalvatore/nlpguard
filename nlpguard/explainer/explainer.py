@@ -22,7 +22,7 @@ class Explainer(ABC):
 
         Args:
             label_ids_to_explain (list): List of class label ids to explain.
-            id2label
+            id2label (dict): Dictionary mapping class label ids to class names.
             explainer_output_folder (str): Path to the folder containing the local explanations.
 
         Returns:
@@ -130,9 +130,8 @@ class Explainer(ABC):
 
 
 class IntegratedGradientsExplainer(Explainer):
-    """ Integrated Gradients implementation of the Explainer abstract class.
+    """ Integrated Gradients implementation of the Explainer abstract class. """
 
-    """
     def __init__(self, model, tokenizer, device="cpu"):
         super().__init__()
         self.model = model
@@ -168,7 +167,16 @@ class IntegratedGradientsExplainer(Explainer):
             yield list1[start_index:end_index], list2[start_index:end_index], start_index, end_index
 
     def local_explanations(self, df_predictions, local_explanations_folder, label_ids_to_explain, id2label, batch_size=128):
-        """ ."""
+        """ Computes and saves local explanations for a set of predictions in the output folder.
+
+        Args:
+            df_predictions (pd.DataFrame): Dataframe containing the predictions to explain.
+            local_explanations_folder (str): Path to the folder where the local explanations will be saved.
+            label_ids_to_explain (list): List of label ids to explain.
+            id2label (dict): Dictionary mapping label ids to label names.
+            batch_size (int, optional): Batch size. Defaults to 128.
+
+        """
 
         log_errors = []
         log_filepath = os.path.join(local_explanations_folder, "log_file.txt")
@@ -212,7 +220,7 @@ class IntegratedGradientsExplainer(Explainer):
         return
 
     def _compute_batch_local_explanations(self, label_id, batch_texts, batch_pred_scores):
-        """ ."""
+        """ Computes local explanations for a batch of texts. """
 
         batch_tokens = []
         batch_scores = []
@@ -242,6 +250,8 @@ class IntegratedGradientsExplainer(Explainer):
 
 
 class ShapExplainer(Explainer):
+    """ Shap implementation of the Explainer abstract class. """
+    
     def local_explanations(self):
         return
 
