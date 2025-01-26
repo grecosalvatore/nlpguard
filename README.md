@@ -1,9 +1,8 @@
-<div align="left">
-
-<h1><b>NLPGuard</b></h1>
-<p style="margin-top: -10px; font-size: 20px;"><i>A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers</i></p>
-
+<div align="left" style="font-size: 36px; font-weight: bold;">NLPGuard</div>
+<div align="left" style="margin-top: -10px; font-size: 18px; font-style: italic;">
+  A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
 </div>
+
 
 
 [![Documentation Status](https://readthedocs.org/projects/nlpguard/badge/?version=latest)](https://nlpguard.readthedocs.io/en/latest/)
