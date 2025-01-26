@@ -150,7 +150,7 @@ class NLPGuard:
                        hf_token="", hf_endpoint="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct",
                        device='cuda' if torch.cuda.is_available() else 'cpu'):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
-        
+
         Args:
             output_dict (:obj:dict): Dictionary containing the most important words for each label.
             identifier_method (str, optional): Method to use for identifying protected attributes. Defaults to "chatgpt".

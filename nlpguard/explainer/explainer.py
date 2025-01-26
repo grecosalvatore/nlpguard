@@ -52,13 +52,14 @@ class Explainer(ABC):
         return output_dict
 
     @staticmethod
-    def _load_local_explanations(dir_path):
+    def _load_local_explanations(dir_path) -> pd.DataFrame:
         """ Loads local explanations from a directory.
 
         Args:
-            dir_path (str): Path to the directory containing the local explanations.
+            dir_path :obj:`str`: Path to the directory containing the local explanations.
+
         Returns:
-            pd.DataFrame: Dataframe containing the local explanations.
+            :obj:`pandas.core.frame.DataFrame`: Dataframe containing the local explanations.
         """
 
         df_list = []
@@ -84,7 +85,7 @@ class Explainer(ABC):
         return df
 
     @staticmethod
-    def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##"):
+    def _compute_global_scores(df, minimum_frequency=2, subtoken_separator="##") -> pd.DataFrame:
         """ Computes overall importance scores (global explanations) for each token by aggregating their importance withing individual predictions (local explanations).
 
         Args:
@@ -219,8 +220,17 @@ class IntegratedGradientsExplainer(Explainer):
 
         return
 
-    def _compute_batch_local_explanations(self, label_id, batch_texts, batch_pred_scores):
-        """ Computes local explanations for a batch of texts. """
+    def _compute_batch_local_explanations(self, label_id, batch_texts, batch_pred_scores) -> tuple[list[str], list[float], list[float]]:
+        """ Computes local explanations for a batch of texts.
+
+        Args:
+            label_id (:obj:`int`): Label id to explain.
+            batch_texts (:obj:`list[str]`): List of texts to explain.
+            batch_pred_scores (:obj:`list[float]`): List of predicted probabilities for the target label.
+
+        Returns:
+            :obj:`tuple(list(str), list(float), list(float))`: Tuple containing the tokens, feature importance scores, and weighted feature importance scores.
+        """
 
         batch_tokens = []
         batch_scores = []
