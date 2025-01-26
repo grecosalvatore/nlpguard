@@ -42,18 +42,22 @@ class PandasDataFrameModerator(Moderator):
         super().__init__()
         return
 
-    def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
+    def words_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128) -> pd.DataFrame:
         """ Performs the word removal mitigation strategy.
 
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
             protected_attributes_per_label_dict (:obj:dict): Dictionary of protected attributes per class label.
-            text_column_name (str): Name of the column containing the text.
-            label_column_name (str): Name of the column containing the class label.
-            id2label (:obj:dict): Dictionary mapping class label ids to class label names.
-            mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
-            batch_size (int, optional): Batch size.
+            text_column_name (:obj:`str`): Name of the column containing the text.
+            label_column_name (:obj:`str`): Name of the column containing the class label.
+            id2label (:obj:`dict`): Dictionary mapping class label ids to class label names
+            id2label (:obj:`dict`): Dictionary mapping class label ids to class label names.
+            mitigate_each_label_separately (:obj:`bool`, `optional`): Whether to mitigate each class label separately.
+            batch_size (:obj:`int`, `optional`): Batch size for processing. Default is 128.
+
+        Returns:
+            :obj:`pandas.DataFrame`: DataFrame with the mitigated texts.
         """
 
         if mitigate_each_label_separately == False:
@@ -75,13 +79,16 @@ class PandasDataFrameModerator(Moderator):
         return df_train
 
     @staticmethod
-    def _batch_words_removal(texts, tokenizer, protected_attributes):
+    def _batch_words_removal(texts, tokenizer, protected_attributes) -> list(str):
         """ Removes words from texts in batch.
 
         Args:
-            texts (:obj:`list` of :obj:`str`): List of texts.
+            texts (:obj:`list(str)`): List of texts.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
             protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
+
+        Returns:
+            :obj:`list(str)`: List of cleaned texts.
         """
 
         # Tokenize the texts in batch

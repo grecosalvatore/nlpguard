@@ -18,6 +18,11 @@ This document provides an overview of these components and their role in improvi
    identifier/index
    moderator/index
 
+.. automodule:: nlpguard
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 
 Explainer

@@ -287,7 +287,7 @@ class LLamaIdentifier(Identifier):
         """Generates annotation for a token using the Hugging Face Inference API.
 
         Args:
-            tk :obj:`str`: The token to be annotated.
+            tk (:obj:`str`): The token to be annotated.
             temperature (:obj:`float`, `optional`): The sampling temperature for the model. Defaults to 0.3.
             prompt_template (:obj:`str`, `optional`): The prompt template for the model. Defaults to None.
 
