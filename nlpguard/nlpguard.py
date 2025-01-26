@@ -15,6 +15,16 @@ class NLPGuard:
     The Explainer is used to extract the most important words from a corpus of texts.
     The Identifier is used to identify the protected attributes from the most important words extracted by the explainer.
     The Moderator is used to mitigate the protected attributes identified by the identifier in a corpus of texts.
+
+    Attributes:
+        use_case_name (:obj:`str`): Name of the use case. It is used to create a new folder in the output folder.
+        output_folder (:obj:`str`): Path to the output folder.
+        explainer_output_folder (:obj:`str`): Path to the explainer output folder.
+        identifier_output_folder (:obj:`str`): Path to the identifier output folder.
+        moderator_output_folder (:obj:`str`): Path to the moderator output folder.
+        id2label (:obj:`dict`): Dictionary mapping label ids to label names.
+        label2id (:obj:`dict`): Dictionary mapping label names to label ids.
+
     """
     def __init__(self):
         self.use_case_name = None
@@ -26,12 +36,16 @@ class NLPGuard:
         self.label2id = None
         return
 
-    def initialize_mitigation_framework(self, id2label, use_case_name=None, output_folder=None):
+    def initialize_mitigation_framework(self, id2label, use_case_name=None, output_folder=None) -> None:
         """ Initializes the output folders.
+
             Args:
-                use_case_name (str): Name of the use case. It is used to create a new folder in the output folder.
-                output_folder (str): Path to the output folder.
-                labels2id (dict): Dictionary mapping label names to label ids.
+                use_case_name (:obj:`str`): Name of the use case. It is used to create a new folder in the output folder.
+                output_folder (:obj:`str`): Path to the output folder.
+                label2id (:obj:`dict`): Dictionary mapping label names to label ids.
+
+            Returns:
+                None
         """
         self.id2label = id2label
         self.label2id = {v: k for k, v in id2label.items()}
@@ -39,11 +53,15 @@ class NLPGuard:
         return
 
     @staticmethod
-    def _init_output_folders(use_case_name, output_folder):
+    def _init_output_folders(use_case_name, output_folder) -> tuple:
         """ Initializes the output folders.
+
         Args:
-            use_case_name (str): Name of the use case. It is used to create a new folder in the output folder.
-            output_folder (str): Path to the output folder.
+            use_case_name (:obj:`str`): Name of the use case. It is used to create a new folder in the output folder.
+            output_folder (:obj:`str`): Path to the output folder.
+
+        Returns:
+            :obj:`tuple(str)`: Tuple containing the output folder, the use case folder, the explainer output folder, the identifier output folder and the moderator output folder.
         """
         # Init output folder. If output folder is not specified, the dafault is "outputs".
         if output_folder is None:
@@ -91,15 +109,19 @@ class NLPGuard:
         # TODO: implement full mitigation pipeline in one function (explainer + identifier + moderator)
         return
 
-    def run_explainer(self, model, tokenizer, texts, label_ids_to_explain,  explainer_method="integrated-gradients", batch_size=128, device="cpu"):
-        """
+    def run_explainer(self, model, tokenizer, texts, label_ids_to_explain,  explainer_method="integrated-gradients", batch_size=128, device="cpu") -> dict:
+        """ Runs the explainer on the texts.
+
         Args:
             model (:obj:`transformers.AutoModelForSequenceClassification`): The model to explain.
             tokenizer (:obj:`transformers.AutoTokenizer`): The tokenizer to use to preprocess the inputs.
-            texts (:obj:List[str]): The texts to explain.
-            label_ids_to_explain (List[int]): The label ids to explain.
-            explainer_method (str): The explainer method to use. The default is Integrated Gradients.
-            device (str, optional): The device to run the explainer on. The default is "cpu".
+            texts (:obj:`list[str]`): The list of texts to explain.
+            label_ids_to_explain (:obj:`list(str)`): The list of label ids to explain.
+            explainer_method (:obj:`str`): The explainer method to use. The default is Integrated Gradients.
+            device (:obj:`str`, `optional`): The device to run the explainer on. The default is "cpu".
+
+        Returns:
+            :obj:`dict`: Dictionary containing the local explanations for each text.
         """
 
         if explainer_method == "integrated-gradients":
@@ -128,6 +150,7 @@ class NLPGuard:
                        hf_token="", hf_endpoint="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct",
                        device='cuda' if torch.cuda.is_available() else 'cpu'):
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
+        
         Args:
             output_dict (:obj:dict): Dictionary containing the most important words for each label.
             identifier_method (str, optional): Method to use for identifying protected attributes. Defaults to "chatgpt".

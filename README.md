@@ -1,7 +1,7 @@
 <div align="left">
 
 <h1><b>NLPGuard</b></h1>
-<p style="margin-top: -10px; font-size: 24px;"><i>A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers</i></p>
+<p style="margin-top: -10px; font-size: 28px;"><i>A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers</i></p>
 
 </div>
 
