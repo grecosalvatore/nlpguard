@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include setup.py
+recursive-include docs/source/_static *
+recursive-include nlpguard *.py
+prune saved_datasets
+prune saved_models
