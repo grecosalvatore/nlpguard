@@ -251,7 +251,7 @@ class IntegratedGradientsExplainer(Explainer):
 
 class ShapExplainer(Explainer):
     """ Shap implementation of the Explainer abstract class. """
-    
+
     def local_explanations(self):
         return
 

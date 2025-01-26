@@ -1,4 +1,9 @@
-# NLPGuard: A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers
+<div align="left">
+
+# **NLPGuard**  
+<p style="margin-top: -20px; font-size: 20px;"><i>A Framework for Mitigating the Use of Protected Attributes by NLP Classifiers</i></p>
+
+</div>
 
 
 [![Documentation Status](https://readthedocs.org/projects/nlpguard/badge/?version=latest)](https://nlpguard.readthedocs.io/en/latest/)
