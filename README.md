@@ -103,7 +103,7 @@ NLPGuard currently supports the following mitigation strategies:
 # Setup
 1) Create and Start a new environment:
 ```sh
-conda create -n nlpguard-env python=3.8 anaconda
+conda create -n nlpguard-env python=3.9 anaconda
 conda activate nlpguard-env
 ```
 2) Install the required packages:
@@ -111,9 +111,19 @@ conda activate nlpguard-env
 pip install -r requirements.txt
 ```
 
+## Installation
+NLPGuard is available on PyPI and can be installed with pip for Python >= 3.9.
+```bash
+# Install latest stable version
+pip install nlpguard
+
+# Alternatively, install latest development version
+pip install git+https://github.com/grecosalvatore/nlpguard
+```
+
 # Getting Started
 ```python
-from framework.mitigation_framework import MitigationFramework
+from nlpguard.nlpguard import NLPGuard
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
 
@@ -130,7 +140,7 @@ model = AutoModelForSequenceClassification.from_pretrained(model_name_or_path)
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
 # Instantiate the Mitigation Framework
-mf = MitigationFramework().initialize_mitigation_framework(id2label=id2label,
+mf = NLPGuard().initialize_mitigation_framework(id2label=id2label,
                                                            use_case_name="toxicity-classification")
 
 # Labels to per perform the explanations on (e.g., 0: non-toxic, 1: toxic)

@@ -9,7 +9,7 @@ with open(here / 'README.md', encoding='utf-8') as f:
 
 setup(
     name="nlpguard",
-    version="0.0.1",
+    version="0.0.7",
     description="NLPGuard: a Framework for Mitigating the use of Protected Attributes by NLP Classifiers",
     long_description=long_description,  # Use the variable here
     long_description_content_type="text/markdown",
@@ -20,15 +20,19 @@ setup(
     url="https://github.com/grecosalvatore/nlpguard",
     install_requires=[
         "numpy>=1.22.4",
+        "ferret-xai~=0.4.2",
         "scikit-learn>=0.24.2",
-        "matplotlib~=3.5.1",
+        "matplotlib~=3.7.4",
         "scipy>=1.10.0",
-        "tqdm~=4.64.1",
-        "setuptools~=58.0.4",
+        "tqdm>=4.64.1",
+        "setuptools>=58.0.4",
         "openai~=1.3.9",
         "pandas~=2.1.4",
         "torch~=2.1.2",
         "transformers~=4.48.1",
+        "nltk>=3.9.1",
+        "gensim>=4.3.3",
+        "requests~=2.32.3",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -38,3 +42,5 @@ setup(
     ],
     python_requires='>=3.9',
 )
+
+setup_requires=['setuptools>=42', 'wheel']
