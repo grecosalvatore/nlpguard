@@ -1,23 +1,15 @@
 Identifier
 =========
 
-The **Explainer** component extracts the most important predictive words used by the classifier to make predictions. It is designed to help interpret the outputs of machine learning models by identifying influential features.
+The **Identifier** component determines which of the words extracted by the **Explainer** are related to protected attributes.
 
 Overview
 --------
 
-The **Explainer** works by:
-- Analyzing the model's predictions and the features that contribute most to them.
-- Highlighting the top predictive words for each prediction.
-
-This tool is particularly useful for:
-- Debugging model behavior.
-- Ensuring transparency and interpretability of NLP models.
+The **Identifier** works by:
+- ...
 
 ### Key Features
-- Extraction of top predictive words.
-- Support for multiple classifier types.
-- Easy integration with popular NLP pipelines.
 
 ### Example Usage
 
@@ -25,15 +17,9 @@ Here’s an example of how to use the **Explainer** component:
 
 .. code-block:: python
 
-   from nlpguard.explainer import Explainer
+   from nlpguard.identifier import Identifier
 
-   # Instantiate the Explainer
-   explainer = Explainer(model=my_model, tokenizer=my_tokenizer)
 
-   # Explain a prediction
-   prediction_explanation = explainer.explain("The text to analyze")
-
-   print(prediction_explanation)
 
 For more details on the available methods, refer to the **API Documentation** below.
 

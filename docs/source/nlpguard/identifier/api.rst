@@ -1,7 +1,7 @@
-Explainer API Documentation
+Identifier API Documentation
 ===========================
 
-This section provides a detailed reference of the classes, methods, and attributes available in the **Explainer** module.
+This section provides a detailed reference of the classes, methods, and attributes available in the **Identifier** module.
 
 .. automodule:: nlpguard.identifier.identifier
    :members:
