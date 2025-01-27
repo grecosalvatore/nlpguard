@@ -151,7 +151,8 @@ class PandasDataFrameModerator(Moderator):
 
         return clean_texts
 
-    def sentences_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128):
+    def sentences_removal_mitigation_strategy(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, id2label, mitigate_each_label_separately=False, batch_size=128) -> pd.DataFrame:
+
         """ Performs the sentence removal mitigation strategy.
 
         Args:
@@ -190,9 +191,8 @@ class PandasDataFrameModerator(Moderator):
                                                            protected_attributes_per_label_dict, text_column_name,
                                                            label_column_name, id2label, n_synonyms=5,
                                                            keep_original_sentence=True,
-                                                           mitigate_each_label_separately=False, batch_size=128):
-        """Performs the word replacement with synonyms mitigation strategy.
-        `n_synonyms` synonyms are generated for each protected attributes in each text by replacing each protected attributes with one of the most similar `n_synonyms` words.
+                                                           mitigate_each_label_separately=False, batch_size=128) -> pd.DataFrame:
+        """ Performs the word replacement with synonyms mitigation strategy. `n_synonyms` synonyms are generated for each protected attributes in each text by replacing each protected attributes with one of the most similar `n_synonyms` words.
 
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
@@ -240,7 +240,7 @@ class PandasDataFrameModerator(Moderator):
         return df_train
 
     def _generate_synonym_sentences(self, texts, protected_words, glove_word_embedding, n_synonyms,
-                                    keep_original_sentence):
+                                    keep_original_sentence) -> list[str]:
         """ Generate sentences by replacing words with synonyms.
 
         Args:

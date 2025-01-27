@@ -33,7 +33,7 @@ class ChatGPTIdentifier(Identifier):
         openai.api_key = openai_api_key
         return
 
-    def annotate_protected_attributes(self, tokens, temperature=0.3) -> tuple(list(dict), list(str)):
+    def annotate_protected_attributes(self, tokens, temperature=0.3):
         """  Annotates the protected attributes using ChatGPT.
 
         Args:
