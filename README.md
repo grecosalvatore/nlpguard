@@ -8,7 +8,7 @@
 
 [![ACM Badge](https://img.shields.io/badge/ACM%20Paper-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/10.1145/3686924)
 [![Documentation Status](https://readthedocs.org/projects/nlpguard/badge/?version=latest)](https://nlpguard.readthedocs.io/en/latest/)
-[![License](https://img.shields.io/github/license/grecosalvatore/nlpguard)](https://github.com/grecosalvatore/nlpguard/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/grecosalvatore/nlpguard)](https://github.com/grecosalvatore/nlpguard/blob/master/LICENSE)
 [![Version](https://img.shields.io/pypi/v/nlpguard?color=blue)](https://pypi.org/project/nlpguard)
 [![Downloads](https://static.pepy.tech/badge/nlpguard)](https://pepy.tech/project/nlpguard)
 
