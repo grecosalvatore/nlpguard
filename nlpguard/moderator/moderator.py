@@ -88,7 +88,7 @@ class PandasDataFrameModerator(Moderator):
             protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
 
         Returns:
-            :obj:`list(str)`: List of cleaned texts.
+            :obj:`list(str)`: List of mitigated texts.
         """
 
         # Tokenize the texts in batch
@@ -113,12 +113,15 @@ class PandasDataFrameModerator(Moderator):
 
     @staticmethod
     def _batch_sentences_removal(texts, tokenizer, protected_attributes):
-        """ Removes sentences from texts in batch.
+        """ Removes sentences containing protected attributes from texts in batch.
 
         Args:
             texts (:obj:`list` of :obj:`str`): List of texts.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
             protected_attributes (:obj:`list` of :obj:`str`): List of protected attributes to remove.
+
+        Returns:
+            :obj:`list(str)`: List of mitigated texts obtained by removing sentences containing protected attributes.
         """
 
         # Tokenize the texts in batch
@@ -154,10 +157,15 @@ class PandasDataFrameModerator(Moderator):
         Args:
             df_train (:obj:`pandas.DataFrame`): Training dataset.
             tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
-            protected_attributes_per_label_dict (:obj:dict): Dictionary of protected attributes per class label.
-            text_column_name (str): Name of the column containing the text.
-            label_column_name (str): Name of the column containing the class label.
-            mitigate_each_label_separately (bool, optional): Whether to mitigate each class label separately.
+            protected_attributes_per_label_dict (:obj:`dict`): Dictionary of protected attributes per class label.
+            text_column_name (:obj:`str`): Name of the column containing the text.
+            label_column_name (:obj:`str`): Name of the column containing the class label.
+            id2label (:obj:`dict`): Dictionary mapping class indices to class labels.
+            mitigate_each_label_separately (:obj:`bool`, optional): Whether to mitigate each class label separately. If `True` Protected attributes identified as important for a class label are mitigated for that class label only. If `False` protected attributes identified for a particular class label are mitigated for all class labels. Defaults to `False`.
+            batch_size (:obj:`int`, optional): Batch size. Defaults to 128.
+
+        Returns:
+            :obj:`pandas.DataFrame`: Dataframe with mitigated texts obtained by protected attributes sentence removal.
         """
 
         if mitigate_each_label_separately == False:
@@ -184,21 +192,22 @@ class PandasDataFrameModerator(Moderator):
                                                            keep_original_sentence=True,
                                                            mitigate_each_label_separately=False, batch_size=128):
         """Performs the word replacement with synonyms mitigation strategy.
+        `n_synonyms` synonyms are generated for each protected attributes in each text by replacing each protected attributes with one of the most similar `n_synonyms` words.
 
         Args:
-            df_train (pd.DataFrame): Training dataset.
-            tokenizer (transformers.AutoTokenizer): Tokenizer.
-            protected_attributes_per_label_dict (dict): Protected attributes per label.
-            text_column_name (str): Name of the text column.
-            label_column_name (str): Name of the label column.
-            id2label (dict): Dictionary mapping label IDs to label names.
-            n_synonyms (int): Number of synonym-based sentences to generate per text.
-            keep_original_sentence (bool): Whether to keep the original sentence.
-            mitigate_each_label_separately (bool): Mitigate each label separately.
-            batch_size (int): Batch size for processing.
+            df_train (:obj:`pandas.DataFrame`): Training dataset.
+            tokenizer (:obj:`transformers.AutoTokenizer`): Tokenizer.
+            protected_attributes_per_label_dict (:obj:`dict`): Dictionary of protected attributes per class label.
+            text_column_name (:obj:`str`): Name of the column containing the text.
+            label_column_name (:obj:`str`): Name of the column containing the class label.
+            id2label (:obj:`dict`): Dictionary mapping class indices to class labels.
+            n_synonyms (:obj:`int`, optional): Number of synonym-based sentences to generate per text. Defaults to 5.
+            keep_original_sentence (:obj:`bool`, optional): Whether to keep the original sentence containing the identified protected attribute. Defaults to True.
+            mitigate_each_label_separately (:obj:`bool`, optional): Whether to mitigate each class label separately. If `True` Protected attributes identified as important for a class label are mitigated for that class label only. If `False` protected attributes identified for a particular class label are mitigated for all class labels. Defaults to `False`.
+            batch_size (:obj:`int`, optional): Batch size. Defaults to 128.
 
         Returns:
-            pd.DataFrame: Dataframe with a new column containing synonym-replaced sentences.
+            :obj:`pandas.DataFrame`: Dataframe with mitigated texts obtained by replacing protected attributes with synonyms.
         """
 
         glove_word_embedding = self.load_GloVe_embedding_model()
@@ -232,17 +241,17 @@ class PandasDataFrameModerator(Moderator):
 
     def _generate_synonym_sentences(self, texts, protected_words, glove_word_embedding, n_synonyms,
                                     keep_original_sentence):
-        """Generate sentences by replacing words with synonyms.
+        """ Generate sentences by replacing words with synonyms.
 
         Args:
-            texts (list): List of original sentences.
-            protected_words (list): List of protected words.
-            glove_word_embedding (gensim.models.KeyedVectors): GloVe embeddings model.
-            n_synonyms (int): Number of synonym sentences to generate.
-            keep_original_sentence (bool): Keep the original sentence in output.
+            texts (:obj:`list(str)`): List of original sentences.
+            protected_words (:obj:`list(str)`): List of protected words.
+            glove_word_embedding (:obj:`gensim.models.KeyedVectors`): GloVe embeddings model.
+            n_synonyms (:obj:`int`): Number of synonym sentences to generate.
+            keep_original_sentence (:obj:`bool`): Flag indicating weather to keep the original sentence in the output.
 
         Returns:
-            list: List of lists with synonym-replaced sentences for each original sentence.
+            :obj:`list(str)`: List of texts with synonym-replaced sentences for each original sentence.
         """
 
         synonym_sentences = []

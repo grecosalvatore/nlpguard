@@ -9,6 +9,7 @@ from tqdm import tqdm
 import pandas as pd
 import torch
 
+
 class NLPGuard:
     """ NLPGuard Framework class. It is used to run the mitigation framework.
     It is composed of three main components: Explainer, Identifier and Moderator.
@@ -40,9 +41,9 @@ class NLPGuard:
         """ Initializes the output folders.
 
             Args:
+                id2label (:obj:`dict`): Dictionary mapping label ids to label names.
                 use_case_name (:obj:`str`): Name of the use case. It is used to create a new folder in the output folder.
                 output_folder (:obj:`str`): Path to the output folder.
-                label2id (:obj:`dict`): Dictionary mapping label names to label ids.
 
             Returns:
                 None
