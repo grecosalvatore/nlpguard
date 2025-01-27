@@ -11,7 +11,8 @@ The **Identifier** works by:
 
 ### Key Features
 
-### Example Usage
+Example Usage
+~~~~~~~~~~~~
 
 Here’s an example of how to use the **Explainer** component:
 

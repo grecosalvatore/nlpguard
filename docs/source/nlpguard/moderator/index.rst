@@ -12,10 +12,11 @@ The **Moderator** works by:
 This tool is particularly useful for:
 
 
-### Key Features
+Key Features
+~~~~~~~~~~~~
 
-
-### Example Usage
+Example Usage
+~~~~~~~~~~~~
 
 Here’s an example of how to use the **Moderator** component:
 
