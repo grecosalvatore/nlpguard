@@ -79,7 +79,7 @@ class PandasDataFrameModerator(Moderator):
         return df_train
 
     @staticmethod
-    def _batch_words_removal(texts, tokenizer, protected_attributes) -> list(str):
+    def _batch_words_removal(texts, tokenizer, protected_attributes):
         """ Removes words from texts in batch.
 
         Args:
@@ -305,16 +305,16 @@ class PandasDataFrameModerator(Moderator):
         return
 
     @staticmethod
-    def _get_synonyms(word_list, glove_word_embedding, k=5):
+    def _get_synonyms(word_list, glove_word_embedding, k=5) -> dict[str, list[str]]:
         """ Returns synonyms for the given word list using the GloVe embeddings.
 
         Args:
-            word_list (list): List of words to find synonyms for.
-            glove_word_embedding (gensim.models.KeyedVectors): Pre-trained word embeddings.
-            k (int): Number of synonyms to return for each word.
+            :obj:`list(str)`: List of words to find synonyms for.
+            :obj:`gensim.models.KeyedVectors`: Pre-trained word embeddings.
+            :obj:(`int`, `optional`): Number of synonyms to return for each word. Defaults to 5.
 
         Returns:
-            dict: Dictionary of words and their corresponding synonyms.
+            :obj:`dict`: Dictionary of words and their corresponding synonyms.
         """
 
         synonyms_dict = {}
