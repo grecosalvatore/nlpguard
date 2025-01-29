@@ -153,9 +153,15 @@ class NLPGuard:
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
 
         Args:
-            output_dict (:obj:dict): Dictionary containing the most important words for each label.
-            identifier_method (str, optional): Method to use for identifying protected attributes. Defaults to "chatgpt".
-            number_most_important_words (int, optional): Number of most important words to use for identifying protected attributes. Defaults to 400.
+            output_dict (:obj:`dict`): Dictionary containing the most important words for each label extracted with the explainer.
+            identifier_method (:obj:`str`, `optional`): The identifier method to use. The default is "chatgpt".
+            number_most_important_words (:obj:`int`, `optional`): The number of most important words to use for identifying protected attributes. The default is 400.
+            hf_token (:obj:`str`, `optional`): The Hugging Face API token. The default is "" (only for LlaMa identifier).
+            hf_endpoint (:obj:`str`, `optional`): The Hugging Face API endpoint. The default is "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct" (only for LlaMa identifier).
+            device (:obj:`str`, `optional`): The device to run the identifier on. The default is "cuda" if available, else "cpu".
+
+        Returns:
+            :obj:`dict`: Dictionary containing the protected attributes for each label.
         """
         if identifier_method == "chatgpt":
             # Extracting distinct words from most important words for each label
@@ -194,15 +200,21 @@ class NLPGuard:
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128, n_synonyms=5,
                                                                                  keep_original_sentence=True,):
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
+
         Args:
             df_train (:obj:`pandas.DataFrame`): the training dataset to mitigate.
             tokenizer (:obj:`transformers.AutoTokenizer`): the tokenizer to use for tokenizing the text.
-            protected_attributes_per_label_dict (:obj:dict): a dictionary containing the protected attributes for each label.
-            text_column_name (str): the name of the column containing the text.
-            label_column_name (str): the name of the column containing the labels.
-            mitigation_strategy (str, optional): the mitigation strategy to use. Defaults to "word_removal".
-            mitigate_each_label_separately (bool, optional): whether to mitigate each label separately.
-            batch_size (int, optional): the batch size to use for the mitigation strategy. Defaults to 128.
+            protected_attributes_per_label_dict (:obj:`dict`): a dictionary containing the protected attributes for each label.
+            text_column_name (:obj:`str`): the name of the column containing the text.
+            label_column_name (:obj:`str`): the name of the column containing the labels.
+            mitigation_strategy (:obj:`str`, `optional`): the mitigation strategy to use. Defaults to "word_removal".
+            mitigate_each_label_separately (:obj:bool, `optional`): whether to mitigate each label separately.
+            batch_size (:obj:`int`, `optional`): the batch size to use for the mitigation strategy. Defaults to 128.
+            n_synonyms (:obj:`int`, `optional`): the number of synonyms to use for the word removal mitigation strategy. Defaults to 5.
+            keep_original_sentence (:obj:`bool`, `optional`): whether to keep the original sentence in the mitigated dataset. Defaults to True.
+            
+        Returns:
+            :obj:`pandas.DataFrame`: the mitigated training dataset.
         """
         moderator = PandasDataFrameModerator()
 
