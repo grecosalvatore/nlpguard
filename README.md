@@ -167,8 +167,8 @@ df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifie
 df_train = pd.read_csv("saved_datasets/train.csv")
 
 # If this is True, the protected attributes are mitigated separately for each label, otherwise independently of the label
-# For instance, if it is True, the protected attributes identified for the "nurse" label will be used to mitigate only the examples which original label is "nurse" and the same for "non-nurse"
-# If is False, the protected attributes identified for all the labels (e.g., "non-nurse" and "nurse" label) will be used to mitigate all the examples, independently of the original label
+# For instance, if it is True, the protected attributes identified for the "toxic" label will be used to mitigate only the examples which original label is "nurse" and the same for "non-nurse"
+# If is False, the protected attributes identified for all the labels (e.g., "non-toxic" and "toxic" label) will be used to mitigate all the examples, independently of the original label
 mitigate_each_label_separately = False
 
 # Select the mitigation strategy to use
