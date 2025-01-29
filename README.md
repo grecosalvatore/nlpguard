@@ -141,7 +141,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
 # Instantiate the Mitigation Framework
 mf = NLPGuard().initialize_mitigation_framework(id2label=id2label,
-                                                           use_case_name="toxicity-classification")
+                                                use_case_name="toxicity-classification")
 
 # Labels to per perform the explanations on (e.g., 0: non-toxic, 1: toxic)
 label_ids_to_explain = [0, 1]
@@ -159,11 +159,12 @@ number_most_important_words = 400
 
 #Run the identifier to identify the protected attributes from the most important words extracted by the explainer
 df_annotated, protected_attributes, protected_attributes_dict = mf.run_identifier(output_dict,  # Output of the explainer
-                                                                                  number_most_important_words=number_most_important_words  # Number of most important words to consider
-                                                                                  )
-
+                                                                                  number_most_important_words=number_most_important_words,  # Number of most important words to consider
+                                                                                  identifier_method="llama",  # Identifier method to use. It can be "gpt" or "llama""
+                                                                                  hf_token="INSERT_YOUR_HUGGING_FACE_TOKEN_HERE", # Hugging Face token to use the LlaMa model with the HF inference API 
+                                                                                  hf_endpoint="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct") # Hugging Face endpoint to use the LlaMa model with the HF inference API
 # Load the training dataset to mitigate
-df_train = pd.read_csv("saved_datasets/test.csv")
+df_train = pd.read_csv("saved_datasets/train.csv")
 
 # If this is True, the protected attributes are mitigated separately for each label, otherwise independently of the label
 # For instance, if it is True, the protected attributes identified for the "nurse" label will be used to mitigate only the examples which original label is "nurse" and the same for "non-nurse"
