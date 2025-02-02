@@ -21,12 +21,12 @@ class Explainer(ABC):
         """ Computes global explanations for a set of class labels.
 
         Args:
-            label_ids_to_explain (list): List of class label ids to explain.
-            id2label (dict): Dictionary mapping class label ids to class names.
-            explainer_output_folder (str): Path to the folder containing the local explanations.
+            label_ids_to_explain (:obj:`list(int)`): List of class label ids to explain.
+            id2label (:obj:`dict`): Dictionary mapping class label ids to class names.
+            explainer_output_folder (:obj:`str'): Path to the folder containing the local explanations.
 
         Returns:
-            dict: Dictionary containing the global explanations for each class label.
+            :obj:`dict`: Dictionary containing the global explanations for each class label.
         """
 
         output_dict = {}
@@ -56,7 +56,7 @@ class Explainer(ABC):
         """ Loads local explanations from a directory.
 
         Args:
-            dir_path :obj:`str`: Path to the directory containing the local explanations.
+            dir_path (:obj:`str`): Path to the directory containing the local explanations.
 
         Returns:
             :obj:`pandas.core.frame.DataFrame`: Dataframe containing the local explanations.
@@ -89,12 +89,12 @@ class Explainer(ABC):
         """ Computes overall importance scores (global explanations) for each token by aggregating their importance withing individual predictions (local explanations).
 
         Args:
-            df (pd.DataFrame): Dataframe containing local explanations.
-            minimum_frequency (int, optional): Minimum frequency of a token to be considered in the global explanations. Defaults to 2.
-            subtoken_separator (str, optional): Subtoken separator used by the tokenizer. Defaults to "##".
+            df (:obj:`pd.DataFrame`): Dataframe containing local explanations.
+            minimum_frequency (:obj:`int`, `optional`): Minimum frequency of a token to be considered in the global explanations. Defaults to 2.
+            subtoken_separator (:obj:`str`, `optional`): Subtoken separator used by the tokenizer. Defaults to "##".
 
         Returns:
-            pd.DataFrame: Dataframe containing the global explanations.
+            :obj:`pd.DataFrame`: Dataframe containing the global explanations.
         """
 
         df_grp = df.groupby(["tokens"]).sum().reset_index()
@@ -149,11 +149,12 @@ class IntegratedGradientsExplainer(Explainer):
         """ Iterates two list by batch_size.
 
         Args:
-            list1 (list): First list.
-            list2 (list): Second list.
-            batch_size (int): Batch size.
+            list1 (:obj:`list'): First list.
+            list2 (:obj:`list'): Second list.
+            batch_size (:obj:`int'): Batch size.
+
         Yields:
-            tuple: Tuple containing the current batch of list1, list2, start_index and end_index.
+            :obj:`tuple`: Tuple containing the current batch of list1, list2, start_index and end_index.
         """
 
         # Ensure both input lists have the same length
@@ -176,7 +177,7 @@ class IntegratedGradientsExplainer(Explainer):
             label_ids_to_explain (:obj:`list(int)`): List of label ids to explain.
             id2label (:obj:`dict`): Dictionary mapping label ids to label names.
             batch_size (:obj:`int`, `optional`): Batch size. Defaults to 128.
-            
+
         """
 
         log_errors = []
