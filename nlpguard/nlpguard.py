@@ -149,7 +149,7 @@ class NLPGuard:
 
     def run_identifier(self, output_dict, identifier_method="chatgpt", number_most_important_words=400,
                        hf_token="", hf_endpoint="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct",
-                       device='cuda' if torch.cuda.is_available() else 'cpu'):
+                       device='cuda' if torch.cuda.is_available() else 'cpu') -> dict:
         """ Runs the Identifier Component to determine which of the most important words are protected attributes.
 
         Args:
@@ -198,7 +198,7 @@ class NLPGuard:
         return df_annotated, protected_attributes, protected_attributes_dict
 
     def run_moderator(self, df_train, tokenizer, protected_attributes_per_label_dict, text_column_name, label_column_name, mitigation_strategy="word_removal", mitigate_each_label_separately=False, batch_size=128, n_synonyms=5,
-                                                                                 keep_original_sentence=True,):
+                                                                                 keep_original_sentence=True) -> pd.DataFrame:
         """ Runs the Moderator Component to produce a new mitigated training dataset based on the identified protected attributes.
 
         Args:
@@ -248,19 +248,25 @@ class NLPGuard:
             print("NLPGuard (Moderator): Unknown Mitigation Strategy. Please select ....")
         return df_train_mitigated
 
-    def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu"):
+    def run_predictions(self, model, tokenizer, texts, batch_size, device="cpu", tokenizer_kwargs=None) -> pd.DataFrame:
         """ Runs predictions on the corpus of texts on which compute the explanations.
         Args:
             model (:obj:`transformers.AutoModelForSequenceClassification`): the model to use for predictions.
             tokenizer (:obj:`transformers.AutoTokenizer`): the tokenizer to use for tokenizing the text.
-            texts (:obj:List[str]): the list of texts to predict.
-            batch_size (int): the batch size to use for predictions.
-            device (str, optional): the device to use for predictions. Defaults to "cpu".
+            texts (:obj:`list[str]`): the list of texts to predict.
+            batch_size (:obj:`int`): the batch size to use for predictions.
+            device (:obj:`str`, `optional`): the device to use for predictions. Defaults to "cpu".
+            tokenizer_kwargs (:obj:`dict`, `optional`): the tokenizer kwargs to use for tokenizing the text. Defaults to {'padding': True, 'truncation': True, 'max_length': 128}.
+
+        Returns:
+            :obj:`pandas.DataFrame`: the classifier's predictions.
         """
-        tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
+
+        if tokenizer_kwargs is None:
+            tokenizer_kwargs = {'padding': True, 'truncation': True, 'max_length': 128}
+
         pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
 
-        # TODO - Improve this code using yeld
         preds = []
         iterations = len(texts) // batch_size
         remainder = len(texts) % batch_size

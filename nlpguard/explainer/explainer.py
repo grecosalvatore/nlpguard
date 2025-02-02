@@ -171,12 +171,12 @@ class IntegratedGradientsExplainer(Explainer):
         """ Computes and saves local explanations for a set of predictions in the output folder.
 
         Args:
-            df_predictions (pd.DataFrame): Dataframe containing the predictions to explain.
-            local_explanations_folder (str): Path to the folder where the local explanations will be saved.
-            label_ids_to_explain (list): List of label ids to explain.
-            id2label (dict): Dictionary mapping label ids to label names.
-            batch_size (int, optional): Batch size. Defaults to 128.
-
+            df_predictions (:obj:`pd.DataFrame`): Dataframe containing the predictions to explain.
+            local_explanations_folder (:obj:`str`): Path to the folder where the local explanations will be saved.
+            label_ids_to_explain (:obj:`list(int)`): List of label ids to explain.
+            id2label (:obj:`dict`): Dictionary mapping label ids to label names.
+            batch_size (:obj:`int`, `optional`): Batch size. Defaults to 128.
+            
         """
 
         log_errors = []
